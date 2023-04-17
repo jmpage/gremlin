@@ -1,0 +1,11 @@
+---
+- name: Install dependencies
+  become: yes
+  become_method: sudo
+  ansible.builtin.apt:
+    pkg:
+      - python3
+      - python3-pip
+      - xsel # See: https://github.com/tmux-plugins/tmux-yank#requirements
+
+- include_tasks: common.yml

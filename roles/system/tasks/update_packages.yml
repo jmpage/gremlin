@@ -1,0 +1,8 @@
+---
+# TODO: Add homebrew support on Darwin
+- name: Update packages
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "update_packages/{{ ansible_distribution }}.yml"
+        - "update_packages/{{ ansible_os_family }}.yml"

@@ -1,0 +1,7 @@
+---
+- name: Install alacritty
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "alacritty/{{ ansible_distribution }}.yml"
+        - "alacritty/{{ ansible_os_family }}.yml"

@@ -1,0 +1,37 @@
+---
+- name: Set asdf directory
+  set_fact:
+    asdf_dir: "{{ ansible_env.HOME }}/.asdf"
+
+- name: Check if asdf is installed
+  register: asdf_available
+  command:
+    cmd: which asdf
+  failed_when: asdf_available.rc < 0 or asdf_available.rc > 1
+
+- name: Clone asdf
+  ansible.builtin.git:
+    repo: https://github.com/asdf-vm/asdf.git
+    dest: "{{ asdf_dir }}"
+  when: asdf_available.rc == 0
+
+- name: Determine latest asdf version
+  register: latest_asdf_version
+  command:
+    chdir: "{{ asdf_dir }}"
+    cmd: "git describe --abbrev=0 --tags"
+  when: asdf_available.rc == 0
+
+- name: Checkout latest asdf version
+  command:
+    chdir: "{{ asdf_dir }}"
+    cmd: "git checkout {{ latest_asdf_version.stdout }}"
+  when: asdf_available.rc == 0
+
+- name: Update asdf
+  command:
+    cmd: "{{ asdf_dir }}/bin/asdf update"
+
+- name: Update asdf plugins
+  command:
+    cmd: "{{ asdf_dir}}/bin/asdf plugin update --all"

@@ -1,0 +1,8 @@
+---
+- name: Copy fonts
+  ansible.builtin.copy:
+    src: "{{ file.path }}"
+    dest: "{{ ansible_env.HOME }}/.local/share/fonts/"
+  with_items: "{{ downloaded_fonts.files }}"
+  loop_control:
+    loop_var: file

@@ -1,0 +1,9 @@
+---
+# Install tmux-yank requirements
+# See: https://github.com/tmux-plugins/tmux-yank#requirements
+- name: Install dependencies
+  community.general.homebrew:
+    name: reattach-to-user-namespace
+    state: present
+
+- include_tasks: common.yml

@@ -1,0 +1,25 @@
+---
+- name: Set tpm directory
+  set_fact:
+    tpm_dir: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
+
+# See: https://github.com/ofirgall/tmux-window-name#installation
+- name: Install tmux-window-name dependencies
+  ansible.builtin.pip:
+    name:
+      - libtmux
+      - dataclasses
+    extra_args: --user
+
+- name: Clone tpm repo
+  ansible.builtin.git:
+    repo: https://github.com/tmux-plugins/tpm
+    dest: "{{ tpm_dir }}"
+    version: master
+
+# TODO: verify that .tmux.conf gets copied before bootstrap
+- name: Install plugins
+  shell: "{{ tpm_dir }}/bin/install_plugins"
+
+- name: Update plugins
+  shell: "{{ tpm_dir }}/bin/update_plugins all"

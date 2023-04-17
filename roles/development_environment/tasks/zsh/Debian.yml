@@ -1,0 +1,7 @@
+---
+- name: Install zsh via apt
+  become: yes
+  become_method: sudo
+  ansible.builtin.apt:
+    pkg:
+      - zsh

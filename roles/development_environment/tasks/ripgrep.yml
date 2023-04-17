@@ -1,0 +1,7 @@
+---
+- name: Install ripgrep
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "ripgrep/{{ ansible_distribution }}.yml"
+        - "ripgrep/{{ ansible_os_family }}.yml"

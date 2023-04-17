@@ -1,0 +1,7 @@
+---
+- name: Install tpm
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "tpm/{{ ansible_distribution }}.yml"
+        - "tpm/{{ ansible_os_family }}.yml"

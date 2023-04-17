@@ -1,0 +1,53 @@
+---
+- name: Set font urls
+  set_fact:
+    font_urls:
+
+- name: Create a temporary directory for fonts
+  register: temp_dir
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: fonts
+
+# TODO: skip fonts that are already installed
+- name: Download fonts
+  ansible.builtin.get_url:
+    url: "{{ item }}"
+    dest: "{{ temp_dir.path }}/{{ item | regex_search('/([^/]+)$', '\\1') | first | regex_replace('%20', ' ')}}"
+  with_items:
+    - "https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Regular.ttf"
+    - "https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Bold.ttf"
+    - "https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Italic.ttf"
+    - "https://raw.githubusercontent.com/romkatv/powerlevel10k-media/master/MesloLGS%20NF%20Bold%20Italic.ttf"
+    - "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Regular/complete/Fantasque%20Sans%20Mono%20Regular%20Nerd%20Font%20Complete.ttf"
+    - "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Italic/complete/Fantasque%20Sans%20Mono%20Italic%20Nerd%20Font%20Complete.ttf"
+    - "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold/complete/Fantasque%20Sans%20Mono%20Bold%20Nerd%20Font%20Complete.ttf"
+    - "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold-Italic/complete/Fantasque%20Sans%20Mono%20Bold%20Italic%20Nerd%20Font%20Complete.ttf"
+
+- name: Find downloaded fonts
+  find:
+    paths: "{{ temp_dir.path }}"
+  register: downloaded_fonts
+
+- name: Copy fonts
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "fonts/{{ ansible_distribution }}.yml"
+        - "fonts/{{ ansible_os_family }}.yml"
+
+- name: Cleanup temporary directory
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent
+
+- name: Check if fc-cache is available
+  register: fccache_available
+  command:
+    cmd: which fc-cache
+  failed_when: fccache_available.rc < 0 or fccache_available.rc > 1
+
+- name: refresh fc-cache
+  command:
+    cmd: fc-cache -f -v
+  when: fccache_available.rc == 0

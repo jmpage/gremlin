@@ -1,0 +1,13 @@
+---
+# TODO: Replace with build from source:
+# https://git.savannah.gnu.org/cgit/emacs.git/tree/INSTALL.REPO
+# https://www.emacswiki.org/emacs/BuildingEmacs
+# https://ubuntuhandbook.org/index.php/2021/12/compile-gnu-emacs-source-ubuntu/
+# add native compilation features
+
+- name: Install emacs
+  become: yes
+  become_method: sudo
+  ansible.builtin.apt:
+    pkg:
+      - emacs

@@ -1,0 +1,7 @@
+---
+- name: Install emacs
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "emacs/{{ ansible_distribution }}.yml"
+        - "emacs/{{ ansible_os_family }}.yml"

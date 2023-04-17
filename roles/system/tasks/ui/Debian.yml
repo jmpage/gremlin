@@ -1,0 +1,9 @@
+---
+- name: "UI[Gnome]: Check if gsettings is installed"
+  register: gsettings_available
+  command:
+    cmd: which gsettings
+  failed_when: gsettings_available.rc < 0 or gsettings_available.rc > 1
+
+- include_tasks: gnome.yml
+  when: gsettings_available.rc == 0

@@ -1,0 +1,7 @@
+---
+- name: Install tmux
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "tmux/{{ ansible_distribution }}.yml"
+        - "tmux/{{ ansible_os_family }}.yml"

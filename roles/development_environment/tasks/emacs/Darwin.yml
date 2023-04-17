@@ -1,0 +1,70 @@
+# ---
+# TODO: hoist to playbook
+- name: Create a temporary directory for emacs
+  register: temp_dir
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: ohmyzsh
+
+# TODO: requires curl
+- name: Retrieve latest build
+  register: latest_build_url
+  script: "curl https://emacsformacosx.com/download/emacs-builds/ | grep -E '\"Emacs-[0-9\.\-]+-universal.dmg\"' | sed -re 's/.*\"(Emacs-[0-9\.\-]+-universal.dmg)\".*([0-9]{4}-[0-9]{2}-[0-9]{2}).*/\2 \1/g' | sort -nr | head -1 | sed 's/^[0-9\-]* //g'"
+
+- name: Download latest release
+  ansible.builtin.get_url:
+    url: "{{ latest_build_url }}"
+    dest: "{{ temp_dir.path }}/emacs.dmg"
+
+- name: Mount emacs.dmg
+  command:
+    cmd: "hdiutil attach {{ temp_dir.path }}/emacs.dmg"
+
+- name: Copy Emacs.app to Applications
+  become: yes
+  become_method: sudo
+  ansible.builtin.copy:
+    src: "/Volumes/Emacs/Emacs.app"
+    dest: "/Applications/Emacs.app"
+
+- name: Unmount emacs.dmg
+  command:
+    cmd: "hdiutil unmount /Volumes/Emacs"
+
+- name: Cleanup temporary directory
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent
+
+# TODO: Do we still need the following fix?
+# Fix full disk access issues related to permissions being
+# granted to emacs but not the rubyscript which launches it.
+# https://github.com/caldwell/build-emacs/issues/84#issuecomment-545754668
+# local prev_dir = pwd
+# cd /Applications/Emacs.app/Contents/MacOS
+# mv Emacs Emacs.old
+# ln -s Emacs-x86_64-10_14 Emacs
+# cd $prev_dir
+
+- name: Symlink emacs binary
+  become: yes
+  become_method: sudo
+  ansible.builtin.file:
+    src: /Applications/Emacs.app/Contents/MacOS/bin/Emacs
+    dest: /usr/local/bin/emacs
+    state: link
+    # TODO: owner/group
+
+- name: Symlink emacsclient binary
+  become: yes
+  become_method: sudo
+  ansible.builtin.file:
+    src: /Applications/Emacs.app/Contents/MacOS/bin/emacsclient
+    dest: /usr/local/bin
+    state: link
+    # TODO: owner/group
+
+# TODO: Drop emacs shortcut in dock
+
+# TODO: postinstall message:
+# Emacs must be given Full Disk Access in System Preferences > Security & Privacy > Privacy

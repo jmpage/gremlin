@@ -1,0 +1,46 @@
+---
+- name: Set emacs directory
+  set_fact:
+    emacs_dir: "{{ ansible_env.HOME }}/.emacs.d"
+
+- name: Check if prelude is already installed
+  register: prelude_core
+  ansible.builtin.stat:
+    path: "{{ emacs_dir }}/core/prelude-core.el"
+
+- name: Create a temporary directory for prelude
+  register: temp_dir
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: prelude
+
+- name: Download install script
+  ansible.builtin.get_url:
+    url: "https://github.com/bbatsov/prelude/raw/master/utils/installer.sh"
+    dest: "{{ temp_dir.path }}/installer.sh"
+  when: not prelude_core.stat.exists
+
+- name: Execute install script
+  ansible.builtin.script: "{{ temp_dir.path }}/installer.sh"
+  when: not prelude_core.stat.exists
+
+- name: Cleanup temporary directory
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent
+
+- name: Check if personal is symlinked
+  register: personal_dir
+  ansible.builtin.stat:
+    path: "{{ emacs_dir }}/personal"
+
+- name: Link prelude/personal
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.config.prelude/personal"
+    dest: "{{ emacs_dir }}/personal"
+    state: link
+  when: not personal_dir.stat.islnk
+
+# TODO: update prelude
+# probably need to exec a script to get around y-or-n-p
+# emacs -f prelude-update

@@ -1,0 +1,33 @@
+---
+- name: Set ohmyzsh directory
+  set_fact:
+    ohmyzsh_dir: "{{ ansible_env.HOME }}/.oh-my-zsh"
+
+- name: Check if ohmyzsh is already installed
+  register: ohmyzsh
+  ansible.builtin.stat:
+    path: "{{ ohmyzsh_dir }}"
+
+- name: Create a temporary directory for ohmyzsh
+  register: temp_dir
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: ohmyzsh
+
+- name: Download install script
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+    dest: "{{ temp_dir.path }}/install.sh"
+  when: not ohmyzsh.stat.exists
+
+- name: Execute install script
+  ansible.builtin.script: "{{ temp_dir.path }}/install.sh"
+  when: not ohmyzsh.stat.exists
+
+- name: Cleanup temporary directory
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent
+
+- name: Update ohmyzsh
+  shell: "zsh -c 'source {{ ohmyzsh_dir}}/oh-my-zsh.sh && omz update'"

@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  vars:
+    # TODO: this needs to be touched at some point during the build
+    workspace_dir: "{{ ansible_env.HOME }}/workspace"
+  roles:
+    - role: system
+    - role: development_environment

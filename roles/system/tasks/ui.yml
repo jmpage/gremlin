@@ -1,0 +1,7 @@
+---
+- name: Configure UI
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "ui/{{ ansible_distribution }}.yml"
+        - "ui/{{ ansible_os_family }}.yml"

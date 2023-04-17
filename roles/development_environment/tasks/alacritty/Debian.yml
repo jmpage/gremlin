@@ -1,0 +1,114 @@
+---
+- name: Set repo directory
+  set_fact:
+    alacritty_repo_dir: "{{ workspace_dir }}/oss/alacritty"
+
+- name: Install build dependencies
+  become: yes
+  become_method: sudo
+  ansible.builtin.apt:
+    # See: https://github.com/alacritty/alacritty/blob/master/INSTALL.md#debianubuntu
+    pkg:
+      - cmake
+      - pkg-config
+      - libfreetype6-dev
+      - libfontconfig1-dev
+      - libxcb-xfixes0-dev
+      - libxkbcommon-dev
+      - python3
+      - gzip # for the manpage
+
+# TODO: Ensure that rust stable is installed / up to date
+
+- name: Clone alacritty repo
+  ansible.builtin.git:
+    repo: https://github.com/alacritty/alacritty.git
+    dest: "{{ alacritty_repo_dir }}"
+    version: master
+
+- name: Build alacritty
+  ansible.builtin.command:
+    chdir: "{{ alacritty_repo_dir }}"
+    cmd: cargo build --release
+
+- name: Move alacritty to binpath
+  become: yes
+  become_method: sudo
+  ansible.builtin.copy:
+    src: "{{ alacritty_repo_dir }}/target/release/alacritty"
+    dest: "/usr/bin/alacritty"
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Check Terminfo
+  register: infocmp
+  command:
+    cmd: infocmp alacritty
+  failed_when: infocmp.rc < 0 or infocmp.rc > 1
+
+- name: Install Terminfo
+  when: infocmp.rc == 1
+  become: yes
+  become_method: sudo
+  command:
+    cmd: "tic -xe alacritty,alacritty-direct {{ alacritty_repo_dir }}/extra/alacritty.info"
+
+- name: Desktop Icon
+  become: yes
+  become_method: sudo
+  ansible.builtin.copy:
+    src: "{{ alacritty_repo_dir }}/extra/logo/alacritty-term.svg"
+    dest: "/usr/share/pixmaps/Alacritty.svg"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Desktop File
+  become: yes
+  become_method: sudo
+  command:
+    cmd: "desktop-file-install {{ alacritty_repo_dir }}/extra/linux/Alacritty.desktop"
+
+- name: Update desktop database
+  become: yes
+  become_method: sudo
+  command:
+    cmd: update-desktop-database
+
+- name: Ensure manpage directory exists
+  become: yes
+  become_method: sudo
+  ansible.builtin.file:
+    path: /usr/local/share/man/man1
+    state: directory
+
+- name: gzip alacritty.man
+  command:
+    cmd: "gzip -kf {{ alacritty_repo_dir }}/extra/alacritty.man"
+
+- name: gzip alacritty-msg.man
+  command:
+    cmd: "gzip -kf {{ alacritty_repo_dir }}/extra/alacritty-msg.man"
+
+- name: Copy alacritty.man.gz to manpages
+  become: yes
+  become_method: sudo
+  ansible.builtin.copy:
+    src: "{{ alacritty_repo_dir}}/extra/alacritty.man.gz"
+    dest: "/usr/local/share/man/man1/alacritty.1.gz"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy alacritty-msg.man.gz to manpages
+  become: yes
+  become_method: sudo
+  ansible.builtin.copy:
+    src: "{{ alacritty_repo_dir}}/extra/alacritty-msg.man.gz"
+    dest: "/usr/local/share/man/man1/alacritty-msg.1.gz"
+    owner: root
+    group: root
+    mode: '0644'
+
+# TODO: zsh shell completions

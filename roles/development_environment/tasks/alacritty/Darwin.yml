@@ -1,0 +1,54 @@
+---
+# TODO: Test this task
+
+- name: Set downloads directory
+  set_fact:
+    downloads_dir: "{{ ansible_env.HOME }}/Downloads"
+
+- name: Retrieve latest release from Github API
+  register: release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/alacritty/alacritty/releases/latest
+
+# TODO: Host needs jmespath installed in order to use community.general.json_query
+- name: Download latest release
+  ansible.builtin.get_url:
+    url: "{{ item }}"
+    dest: "{{ downloads_dir }}/alacritty.dmg"
+  loop : "{{ release.json | community.general.json_query(dmg_download_url_query) }}"
+  vars:
+    dmg_download_url_query: "assets[?contains(browser_download_url, 'dmg')] | [0].browser_download_url"
+
+- name: Mount alacritty.dmg
+  command:
+    cmd: "hdiutil attach {{ downloads_dir }}/alacritty.dmg"
+
+- name: Copy Alacritty.app to Applications
+  become: yes
+  become_method: sudo
+  ansible.builtin.copy:
+    src: "/Volumes/Alacritty/Alacritty.app"
+    dest: "/Applications/Alacritty.app"
+
+- name: Unmount alacritty.dmg
+  command:
+    cmd: "hdiutil unmount /Volumes/Alacritty"
+
+- name: Remove alacritty.dmg
+  ansible.builtin.file:
+    path: "{{ downloads_dir }}/alacritty.dmg"
+    state: absent
+
+# TODO: Drop alacritty icon in dock
+
+# TODO: Terminfo
+
+# TODO: Install manpages from releases:
+#  alacritty-msg.1.gz
+#  alacritty.1.gz
+
+# TODO: Install zsh autocompletion from releases:
+#  _alacritty
+
+# TODO: Create mechanism for registering post-install messages and add:
+# Alacritty must be given Full Disk Access in System Preferences > Security & Privacy > Privacy

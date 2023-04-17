@@ -1,0 +1,7 @@
+---
+- name: Install zsh
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "zsh/{{ ansible_distribution }}.yml"
+        - "zsh/{{ ansible_os_family }}.yml"

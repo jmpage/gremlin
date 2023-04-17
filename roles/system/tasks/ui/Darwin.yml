@@ -1,0 +1,28 @@
+---
+- name: "UI[Apple Dock]: Autohide"
+  command:
+    cmd: defaults write com.apple.dock autohide 1
+
+- name: "UI[Apple Dock]: Size"
+  command:
+    cmd: defaults write com.apple.dock tilesize 40
+
+- name: "UI: Show file extensions"
+  command:
+    cmd: defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+- name: "UI[Finder]: Show full path"
+  command:
+    cmd: defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+- name: "UI[Finder]: Default list view"
+  command:
+    cmd: defaults write com.apple.Finder FXPreferredViewStyle Nlsv
+
+- name: "UI[Finder]: Show hidden files"
+  command:
+    cmd: defaults write com.apple.Finder AppleShowAllFiles -bool true
+
+- name: "Restart Finder"
+  command:
+    cmd: killall Finder
