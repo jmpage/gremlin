@@ -7,3 +7,12 @@
 
 - include_tasks: gnome.yml
   when: gsettings_available.rc == 0
+
+- name: "UI[KDE]: Check if kwriteconfig5 is installed"
+  register: kwriteconfig_available
+  command:
+    cmd: which kwriteconfig5
+  failed_when: kwriteconfig_available.rc < 0 or kwriteconfig_available.rc > 1
+
+- include_tasks: kde.yml
+  when: kwriteconfig_available.rc == 0

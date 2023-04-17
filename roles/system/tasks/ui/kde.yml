@@ -1,0 +1,8 @@
+---
+# This is bound to Meta (Alt) by default, which screws up Emacs bindings
+- name: "UI[KDE/Shortcuts]: Rebind KRunner to Super+Space"
+# NOTE: the Meta = Super in KDE :(, so the following switches to the "Super" key:
+  command:
+    cmd: "kwriteconfig5 --file kglobalshortcutsrc --group org.kde.krunner.desktop --key _launch 'Meta+Space\tAlt+F2\tSearch,Meta+Space\tAlt+F2\tSearch,KRunner'"
+
+# TODO: Restart KDE for settings to take effect?
