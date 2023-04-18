@@ -1,0 +1,7 @@
+---
+- include_tasks: Debian.yml
+
+- name: "Package Manager[snap]: Refresh Snaps"
+  become: yes
+  become_method: sudo
+  command: snap refresh
