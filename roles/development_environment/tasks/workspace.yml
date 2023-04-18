@@ -1,0 +1,15 @@
+---
+- name: "Workspace: Create workspace directory"
+  ansible.builtin.file:
+    path: "{{ workspace_dir }}"
+    state: directory
+
+- name: "Workspace: Create workspace/oss directory"
+  ansible.builtin.file:
+    path: "{{ workspace_dir }}/oss"
+    state: directory
+
+- name: "Workspace: Create workspace/personal directory"
+  ansible.builtin.file:
+    path: "{{ workspace_dir }}/personal"
+    state: directory
