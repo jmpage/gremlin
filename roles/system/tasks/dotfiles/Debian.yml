@@ -1,0 +1,4 @@
+---
+- name: "Dotfiles[Dependencies]: Install yadm"
+  ansible.builtin.apt:
+    name: yadm

@@ -1,0 +1,4 @@
+---
+- name: "Dotfiles[Dependencies]: Install yadm"
+  name: yadm
+  state: present

@@ -1,0 +1,21 @@
+---
+# TODO: Does this truly belong in the system role?
+- name: Dotfiles
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "dotfiles/{{ ansible_distribution }}.yml"
+        - "dotfiles/{{ ansible_os_family }}.yml"
+
+- name: "Dotfiles[yadm]: Check if already available"
+  register: yadm_status
+  command: yadm status
+  # TODO: update to constrain to acceptable exit codes
+  failed_when: yadm_status.rc < 0
+
+- name: "Dotfiles[yadm]: Clone dotfiles"
+  command: "yadm clone git@github.com:jmpage/dotfiles.git"
+  when: yadm_status.rc > 0
+
+- name: "Dotfiles[yadm]: Pull dotfiles"
+  command: yadm pull

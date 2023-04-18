@@ -2,3 +2,4 @@
 - import_tasks: package_manager.yml
 - import_tasks: fonts.yml
 - import_tasks: ui.yml
+- import_tasks: dotfiles.yml
