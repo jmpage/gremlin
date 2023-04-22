@@ -1,9 +1,9 @@
 ---
-# TODO: Test this task
-
-- name: Set downloads directory
-  set_fact:
-    downloads_dir: "{{ ansible_env.HOME }}/Downloads"
+- name: Create a temporary directory for alacritty
+  register: temp_dir
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: alacritty
 
 - name: Retrieve latest release from Github API
   register: release
@@ -13,31 +13,48 @@
 # TODO: Host needs jmespath installed in order to use community.general.json_query
 - name: Download latest release
   ansible.builtin.get_url:
-    url: "{{ item }}"
-    dest: "{{ downloads_dir }}/alacritty.dmg"
-  loop : "{{ release.json | community.general.json_query(dmg_download_url_query) }}"
+    url: "{{ release.json | community.general.json_query(dmg_download_url_query) }}"
+    dest: "{{ temp_dir.path }}/alacritty.dmg"
   vars:
     dmg_download_url_query: "assets[?contains(browser_download_url, 'dmg')] | [0].browser_download_url"
 
+- name: Generate mtree for existing alacritty
+  register: mtree
+  shell: "mtree -c -K sha256digest -p /Applications/Alacritty.app > {{ temp_dir.path }}.mtree"
+  # status 1 = error occurred (e.g. path does not exist)
+  failed_when: mtree.rc > 1
+
 - name: Mount alacritty.dmg
   command:
-    cmd: "hdiutil attach {{ downloads_dir }}/alacritty.dmg"
+    cmd: "hdiutil attach {{ temp_dir.path }}/alacritty.dmg"
+
+- name: Compare mtree w/ new Alacritty.app
+  register: mtree_compare
+  shell: "mtree -p /Volumes/Alacritty/Alacritty.app < {{ temp_dir.path }}.mtree"
+  # only when we generated an mtree, i.e. the destination already exists
+  when: mtree.rc == 0
+  # status 0 = success, 2 = hierarchy does not match
+  failed_when: mtree_compare.rc != 0 and mtree_compare.rc != 2
+
+- name: Remove existing Alacritty.app
+  become: yes
+  become_method: sudo
+  ansible.builtin.file:
+    path: /Applications/Alacritty.app
+    state: absent
+  # only when destination exists and does not match source
+  when: mtree.rc == 0 and mtree_compare.rc == 2
 
 - name: Copy Alacritty.app to Applications
   become: yes
   become_method: sudo
-  ansible.builtin.copy:
-    src: "/Volumes/Alacritty/Alacritty.app"
-    dest: "/Applications/Alacritty.app"
+  command: "cp -Rf /Volumes/Alacritty/Alacritty.app /Applications/"
+  # only when destination didn't exist or did not match source
+  when: mtree.rc == 1 or mtree_compare.rc == 2
 
 - name: Unmount alacritty.dmg
   command:
     cmd: "hdiutil unmount /Volumes/Alacritty"
-
-- name: Remove alacritty.dmg
-  ansible.builtin.file:
-    path: "{{ downloads_dir }}/alacritty.dmg"
-    state: absent
 
 # TODO: Drop alacritty icon in dock
 
