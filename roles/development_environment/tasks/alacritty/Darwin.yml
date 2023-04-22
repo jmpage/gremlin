@@ -63,6 +63,12 @@
     cmd: "hdiutil unmount /Volumes/Alacritty"
   changed_when: False
 
+- name: Cleanup temporary directory
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent
+  changed_when: False
+
 # TODO: Drop alacritty icon in dock
 
 # TODO: Terminfo
