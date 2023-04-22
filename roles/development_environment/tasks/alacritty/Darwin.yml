@@ -66,6 +66,3 @@
 
 # TODO: Install zsh autocompletion from releases:
 #  _alacritty
-
-# TODO: Create mechanism for registering post-install messages and add:
-# Alacritty must be given Full Disk Access in System Preferences > Security & Privacy > Privacy

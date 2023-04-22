@@ -74,6 +74,3 @@
     state: link
 
 # TODO: Drop emacs shortcut in dock
-
-# TODO: postinstall message:
-# Emacs must be given Full Disk Access in System Preferences > Security & Privacy > Privacy

@@ -5,3 +5,8 @@
   roles:
     - role: system
     - role: development_environment
+  post_tasks:
+    - name: Display post-install message.
+      debug:
+        msg: "Manual steps defined in POST_INSTALL.DARWIN.md must be taken."
+      when: ansible_os_family == "Darwin"
