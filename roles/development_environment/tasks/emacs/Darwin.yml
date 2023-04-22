@@ -24,6 +24,12 @@
   command:
     cmd: "hdiutil attach {{ temp_dir.path }}/emacs.dmg"
 
+- name: Verify Emacs.app signature
+  register: codesign
+  command:
+    cmd: "codesign -dvv /Volumes/Emacs/Emacs.app"
+  failed_when: "'Authority=Developer ID Application: Galvanix (5BRAQAFB8B)' not in codesign.stderr"
+
 - name: Compare mtree w/ new Emacs.app
   register: mtree_compare
   shell: "mtree -p /Volumes/Emacs/Emacs.app < {{ temp_dir.path }}.mtree"
