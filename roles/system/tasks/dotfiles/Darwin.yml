@@ -1,4 +1,5 @@
 ---
-- name: "Dotfiles[Dependencies]: Install yadm"
-  name: yadm
-  state: present
+- name: "Install yadm"
+  community.general.homebrew:
+    name: yadm
+    state: present
