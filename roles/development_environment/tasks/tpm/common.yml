@@ -20,6 +20,12 @@
 # TODO: verify that .tmux.conf gets copied before bootstrap
 - name: Install plugins
   shell: "{{ tpm_dir }}/bin/install_plugins"
+  # TODO: TPM seems to be incompatible with various BSD programs that MacOS
+  # provides instead of the GNU variants
+  when: ansible_os_family != "Darwin"
 
 - name: Update plugins
   shell: "{{ tpm_dir }}/bin/update_plugins all"
+  # TODO: TPM seems to be incompatible with various BSD programs that MacOS
+  # provides instead of the GNU variants
+  when: ansible_os_family != "Darwin"
