@@ -34,12 +34,18 @@
   ansible.builtin.stat:
     path: "{{ emacs_dir }}/personal"
 
+- name: Remove non-symlinked directory
+  ansible.builtin.file:
+    path: "{{ emacs_dir }}/personal"
+    state: absent
+  when: not personal_dir.stat.islnk
+
 - name: Link prelude/personal
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.config.prelude/personal"
+    src: "{{ ansible_env.HOME }}/.config/prelude/personal"
     dest: "{{ emacs_dir }}/personal"
     state: link
-  when: not personal_dir.stat.islnk
+    force: true
 
 # TODO: update prelude
 # probably need to exec a script to get around y-or-n-p
