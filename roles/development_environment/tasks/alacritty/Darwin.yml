@@ -71,11 +71,5 @@
 
 # TODO: Drop alacritty icon in dock
 
-# TODO: Terminfo
-
-# TODO: Install manpages from releases:
-#  alacritty-msg.1.gz
-#  alacritty.1.gz
-
 # TODO: Install zsh autocompletion from releases:
 #  _alacritty
