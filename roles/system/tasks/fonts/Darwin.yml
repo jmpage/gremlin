@@ -2,7 +2,7 @@
 - name: Copy fonts
   ansible.builtin.copy:
     src: "{{ file.path }}"
-    dest: "{{ ansbile_env.HOME }}/Library/Fonts/"
+    dest: "{{ ansible_env.HOME }}/Library/Fonts/"
   with_items: "{{ downloaded_fonts.files }}"
   loop_control:
     loop_var: file
