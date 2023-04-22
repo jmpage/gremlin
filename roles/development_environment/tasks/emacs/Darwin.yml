@@ -4,31 +4,37 @@
   ansible.builtin.tempfile:
     state: directory
     prefix: emacs
+  changed_when: False
 
 - name: Retrieve latest build
   register: latest_build_url
   shell: "curl -s https://emacsformacosx.com/download/emacs-builds/ | grep -E '\"Emacs-[0-9\\.\\-]+-universal.dmg\"' | sed -re 's/.*\"(Emacs-[0-9\\.\\-]+-universal.dmg)\".*([0-9]{4}-[0-9]{2}-[0-9]{2}).*/\\2 \\1/g' | sort -nr | head -1 | sed 's/^[0-9\\-]* //g'"
+  changed_when: False
 
 - name: Download latest release
   ansible.builtin.get_url:
     url: "https://emacsformacosx.com/emacs-builds/{{ latest_build_url.stdout }}"
     dest: "{{ temp_dir.path }}/emacs.dmg"
+  changed_when: False
 
 - name: Generate mtree for existing emacs
   register: mtree
   shell: "mtree -c -K sha256digest -p /Applications/Emacs.app > {{ temp_dir.path }}.mtree"
   # status 1 = error occurred (e.g. path does not exist)
   failed_when: mtree.rc > 1
+  changed_when: False
 
 - name: Mount emacs.dmg
   command:
     cmd: "hdiutil attach {{ temp_dir.path }}/emacs.dmg"
+  changed_when: False
 
 - name: Verify Emacs.app signature
   register: codesign
   command:
     cmd: "codesign -dvv /Volumes/Emacs/Emacs.app"
   failed_when: "'Authority=Developer ID Application: Galvanix (5BRAQAFB8B)' not in codesign.stderr"
+  changed_when: False
 
 - name: Compare mtree w/ new Emacs.app
   register: mtree_compare
@@ -37,6 +43,7 @@
   when: mtree.rc == 0
   # status 0 = success, 2 = hierarchy does not match
   failed_when: mtree_compare.rc != 0 and mtree_compare.rc != 2
+  changed_when: False
 
 - name: Remove existing Emacs.app
   become: yes
@@ -57,11 +64,13 @@
 - name: Unmount emacs.dmg
   command:
     cmd: "hdiutil unmount /Volumes/Emacs"
+  changed_when: False
 
 - name: Cleanup temporary directory
   ansible.builtin.file:
     path: "{{ temp_dir.path }}"
     state: absent
+  changed_when: False
 
 - name: Symlink emacs binary
   become: yes

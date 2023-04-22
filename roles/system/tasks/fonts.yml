@@ -1,13 +1,10 @@
 ---
-- name: Set font urls
-  set_fact:
-    font_urls:
-
 - name: Create a temporary directory for fonts
   register: temp_dir
   ansible.builtin.tempfile:
     state: directory
     prefix: fonts
+  changed_when: False
 
 # TODO: skip fonts that are already installed
 - name: Download fonts
@@ -23,11 +20,13 @@
     - "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Italic/complete/Fantasque%20Sans%20Mono%20Italic%20Nerd%20Font%20Complete.ttf"
     - "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold/complete/Fantasque%20Sans%20Mono%20Bold%20Nerd%20Font%20Complete.ttf"
     - "https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold-Italic/complete/Fantasque%20Sans%20Mono%20Bold%20Italic%20Nerd%20Font%20Complete.ttf"
+  changed_when: False
 
 - name: Find downloaded fonts
   find:
     paths: "{{ temp_dir.path }}"
   register: downloaded_fonts
+  changed_when: False
 
 - name: Copy fonts
   include_tasks: "{{ item }}"
@@ -40,12 +39,14 @@
   ansible.builtin.file:
     path: "{{ temp_dir.path }}"
     state: absent
+  changed_when: False
 
 - name: Check if fc-cache is available
   register: fccache_available
   command:
     cmd: which fc-cache
   failed_when: fccache_available.rc < 0 or fccache_available.rc > 1
+  changed_when: False
 
 - name: refresh fc-cache
   command:

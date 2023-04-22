@@ -2,23 +2,27 @@
 - name: Set emacs directory
   set_fact:
     emacs_dir: "{{ ansible_env.HOME }}/.emacs.d"
+  changed_when: False
 
 - name: Check if prelude is already installed
   register: prelude_core
   ansible.builtin.stat:
     path: "{{ emacs_dir }}/core/prelude-core.el"
+  changed_when: False
 
 - name: Create a temporary directory for prelude
   register: temp_dir
   ansible.builtin.tempfile:
     state: directory
     prefix: prelude
+  changed_when: False
 
 - name: Download install script
   ansible.builtin.get_url:
     url: "https://github.com/bbatsov/prelude/raw/master/utils/installer.sh"
     dest: "{{ temp_dir.path }}/installer.sh"
   when: not prelude_core.stat.exists
+  changed_when: False
 
 - name: Execute install script
   ansible.builtin.script: "{{ temp_dir.path }}/installer.sh"
@@ -28,11 +32,13 @@
   ansible.builtin.file:
     path: "{{ temp_dir.path }}"
     state: absent
+  changed_when: False
 
 - name: Check if personal is symlinked
   register: personal_dir
   ansible.builtin.stat:
     path: "{{ emacs_dir }}/personal"
+  changed_when: False
 
 - name: Remove non-symlinked directory
   ansible.builtin.file:

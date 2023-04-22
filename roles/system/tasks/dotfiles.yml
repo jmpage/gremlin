@@ -12,6 +12,7 @@
   command: yadm status
   # TODO: update to constrain to acceptable exit codes
   failed_when: yadm_status.rc < 0
+  changed_when: False
 
 - name: "Dotfiles[yadm]: Clone dotfiles"
   command: "yadm clone git@github.com:jmpage/dotfiles.git"

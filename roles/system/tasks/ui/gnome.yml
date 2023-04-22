@@ -9,6 +9,7 @@
   register: shortcut_control_period
   shell: "gsettings list-recursively | grep '<Control>period'"
   failed_when: shortcut_control_period.rc < 0 or shortcut_control_period.rc > 1
+  changed_when: False
 
 - name: "UI[Shortcuts]: Unbind <Control>period"
   command:
@@ -19,6 +20,7 @@
   register: shortcut_alt_space
   shell: "gsettings list-recursively | grep '<Alt>space'"
   failed_when: shortcut_alt_space.rc < 0 or shortcut_alt_space.rc > 1
+  changed_when: False
 
 - name: "UI[Shortcuts]: Unbind <Alt>space"
   command:

@@ -2,12 +2,14 @@
 - name: Set asdf directory
   set_fact:
     asdf_dir: "{{ ansible_env.HOME }}/.asdf"
+  changed_when: False
 
 - name: Check if asdf is installed
   register: asdf_available
   command:
     cmd: which asdf
   failed_when: asdf_available.rc < 0 or asdf_available.rc > 1
+  changed_when: False
 
 - name: Clone asdf
   ansible.builtin.git:
@@ -21,6 +23,7 @@
     chdir: "{{ asdf_dir }}"
     cmd: "git describe --abbrev=0 --tags"
   when: asdf_available.rc == 0
+  changed_when: False
 
 - name: Checkout latest asdf version
   command:

@@ -4,6 +4,7 @@
   command:
     cmd: which gsettings
   failed_when: gsettings_available.rc < 0 or gsettings_available.rc > 1
+  changed_when: False
 
 - include_tasks: gnome.yml
   when: gsettings_available.rc == 0
@@ -13,6 +14,7 @@
   command:
     cmd: which kwriteconfig5
   failed_when: kwriteconfig_available.rc < 0 or kwriteconfig_available.rc > 1
+  changed_when: False
 
 - include_tasks: kde.yml
   when: kwriteconfig_available.rc == 0

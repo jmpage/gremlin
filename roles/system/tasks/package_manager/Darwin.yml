@@ -4,6 +4,7 @@
   command:
     cmd: which brew
   failed_when: which_brew.rc < 0 or which_brew.rc > 1
+  changed_when: False
 
 - name: "Package Manager[Homebrew]: Install"
   shell: "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""

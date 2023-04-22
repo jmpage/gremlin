@@ -4,11 +4,13 @@
   ansible.builtin.tempfile:
     state: directory
     prefix: alacritty
+  changed_when: False
 
 - name: Retrieve latest release from Github API
   register: release
   ansible.builtin.uri:
     url: https://api.github.com/repos/alacritty/alacritty/releases/latest
+  changed_when: False
 
 # TODO: Host needs jmespath installed in order to use community.general.json_query
 - name: Download latest release
@@ -17,16 +19,19 @@
     dest: "{{ temp_dir.path }}/alacritty.dmg"
   vars:
     dmg_download_url_query: "assets[?contains(browser_download_url, 'dmg')] | [0].browser_download_url"
+  changed_when: False
 
 - name: Generate mtree for existing alacritty
   register: mtree
   shell: "mtree -c -K sha256digest -p /Applications/Alacritty.app > {{ temp_dir.path }}.mtree"
   # status 1 = error occurred (e.g. path does not exist)
   failed_when: mtree.rc > 1
+  changed_when: False
 
 - name: Mount alacritty.dmg
   command:
     cmd: "hdiutil attach {{ temp_dir.path }}/alacritty.dmg"
+  changed_when: False
 
 - name: Compare mtree w/ new Alacritty.app
   register: mtree_compare
@@ -35,6 +40,7 @@
   when: mtree.rc == 0
   # status 0 = success, 2 = hierarchy does not match
   failed_when: mtree_compare.rc != 0 and mtree_compare.rc != 2
+  changed_when: False
 
 - name: Remove existing Alacritty.app
   become: yes
@@ -55,6 +61,7 @@
 - name: Unmount alacritty.dmg
   command:
     cmd: "hdiutil unmount /Volumes/Alacritty"
+  changed_when: False
 
 # TODO: Drop alacritty icon in dock
 

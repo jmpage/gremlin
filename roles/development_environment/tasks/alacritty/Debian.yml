@@ -2,6 +2,7 @@
 - name: Set repo directory
   set_fact:
     alacritty_repo_dir: "{{ workspace_dir }}/oss/alacritty"
+  changed_when: False
 
 - name: Install build dependencies
   become: yes
@@ -46,6 +47,7 @@
   command:
     cmd: infocmp alacritty
   failed_when: infocmp.rc < 0 or infocmp.rc > 1
+  changed_when: False
 
 - name: Install Terminfo
   when: infocmp.rc == 1

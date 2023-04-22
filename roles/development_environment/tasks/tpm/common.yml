@@ -2,6 +2,7 @@
 - name: Set tpm directory
   set_fact:
     tpm_dir: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
+  changed_when: False
 
 # See: https://github.com/ofirgall/tmux-window-name#installation
 - name: Install tmux-window-name dependencies

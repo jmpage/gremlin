@@ -26,3 +26,4 @@
 - name: "Restart Finder"
   command:
     cmd: killall Finder
+  changed_when: False
