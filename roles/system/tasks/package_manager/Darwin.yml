@@ -2,18 +2,19 @@
 - name: "Package Manager[Homebrew]: Check if installed"
   register: which_brew
   command:
-    cmd: which brew
+    cmd: which /opt/homebrew/bin/brew
   failed_when: which_brew.rc < 0 or which_brew.rc > 1
   changed_when: False
 
 - name: "Package Manager[Homebrew]: Install"
-  shell: "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+  shell: "NONINTERACTIVE=1 /bin/bash -c \"$(curl -fsSL 
+https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
   when: which_brew.rc == 1
 
 - name: "Package Manager[Homebrew]: Update Homebrew"
   command:
-    cmd: brew update
+    cmd: /opt/homebrew/bin/brew update
 
 - name: "Package Manager[Homebrew]: Upgrade Casks & Formulae"
   command:
-    cmd: brew upgrade
+    cmd: /opt/homebrew/bin/brew upgrade
