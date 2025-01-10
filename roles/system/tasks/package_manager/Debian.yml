@@ -1,5 +1,0 @@
----
-- name: "Package Manager[apt]: update & upgrade"
-  become: yes
-  become_method: sudo
-  apt: upgrade=dist update_cache=yes

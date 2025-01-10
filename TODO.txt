@@ -1,5 +1,0 @@
-TODO: homebrew and installed software not on path during installation: yadm, brew update, etc
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
-TODO: alacritty requires scdoc on MacOS
-TODO: alacritty terminfo installation on MacOS

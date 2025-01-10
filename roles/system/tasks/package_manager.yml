@@ -1,7 +1,0 @@
----
-- name: Package Manager
-  include_tasks: "{{ item }}"
-  with_first_found:
-    - files:
-        - "package_manager/{{ ansible_distribution }}.yml"
-        - "package_manager/{{ ansible_os_family }}.yml"

@@ -1,5 +1,0 @@
----
-- name: "Install yadm"
-  community.general.homebrew:
-    name: yadm
-    state: present

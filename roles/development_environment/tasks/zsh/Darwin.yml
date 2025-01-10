@@ -1,5 +1,0 @@
----
-- name: Brew install zsh
-  community.general.homebrew:
-    name: zsh
-    state: present

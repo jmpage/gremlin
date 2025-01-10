@@ -1,7 +1,0 @@
----
-- name: Install tmux
-  become: yes
-  become_method: sudo
-  ansible.builtin.apt:
-    pkg:
-      - tmux
