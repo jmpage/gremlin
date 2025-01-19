@@ -21,7 +21,7 @@ get_cursor_bin() {
 
 cursor_install_appimage() {
     local tempfile
-    tempfile="$(mktemp -u)"
+    tempfile="$(mktemp --dry-run)"
 
     curl -o "$tempfile" https://downloader.cursor.sh/linux/appImage/x64
 
@@ -40,7 +40,7 @@ cursor_install_appimage() {
 
 cursor_write_desktop_file() {
     local tempfile
-    tempfile="$(mktemp -u)"
+    tempfile="$(mktemp --dry-run)"
 
     # NOTE: A desktop file is included in the cursor AppImage but it's pretty
     # barebones.
@@ -84,8 +84,16 @@ EOF
 }
 
 cursor_install_dmg() {
-    echo "NOT IMPLEMENTED"
-    exit 1
+    local tempfile
+    tempfile="$(mktemp --dry-run --suffix=.dmg)"
+
+    curl -o "$tempfile" https://downloader.cursor.sh/mac/installer/universal
+    hdiutil attach "$tempfile"
+    as_root cp /Volumes/Cursor/Cursor.app /Applications/
+    hdiutil unmount /Volumes/Cursor
+    rm "$tempfile"
+
+    as_root ln --symbolic --force /opt/cursor/squashfs-root/resources/app/bin/cursor /usr/local/bin/cursor
 }
 
 cursor_install() {
@@ -94,11 +102,9 @@ cursor_install() {
             cursor_install_appimage
             cursor_patch_script
             cursor_write_desktop_file
-            # TODO setup cursor cli
             ;;
         Darwin)
             cursor_install_dmg
-            # TODO setup cursor cli
             ;;
         *)
             echo "Cursor not supported for operating system $(uname)"
