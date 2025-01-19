@@ -76,7 +76,7 @@ execute_plan() {
         exit 1
     fi
 
-    echo "execute plan $1 TODO"
+    ./gremlin/execute.sh "./plans/$1.sh"
 }
 
 list_plans() {
