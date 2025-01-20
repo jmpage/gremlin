@@ -24,6 +24,11 @@ install() {
     run plugin update --all
 }
 
+execute() {
+    . "$(get_asdf_dir)/asdf.sh"
+    $@
+}
+
 run() {
     "$(get_asdf_dir)/bin/asdf" "$@"
 }
@@ -36,6 +41,10 @@ main() {
     fi
 
     case "$1" in
+        execute)
+            shift 1
+            execute "$@"
+            ;;
         install)
             shift 1
             install "$@"
