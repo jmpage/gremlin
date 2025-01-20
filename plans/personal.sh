@@ -29,15 +29,16 @@ gremlin feature asdf install
 gremlin feature tmux install
 gremlin feature alacritty install
 
-#gremlin feature firefox install
-#gremlin feature joplin install
-#gremlin feature joplin install-extension TODO
-#gremlin feature dropbox install
-
 gremlin feature fonts install \
         'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold-Italic/FantasqueSansMNerdFont-BoldItalic.ttf' \
         'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Italic/FantasqueSansMNerdFont-Italic.ttf' \
         'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold/FantasqueSansMNerdFont-Bold.ttf' \
         'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFont-Regular.ttf'
 
+#gremlin feature firefox install
+#gremlin feature joplin install
+#gremlin feature joplin install-extension TODO
+#gremlin feature dropbox install
+
+gremlin feature gnome configure
 # TODO gsettings / kde / etc
