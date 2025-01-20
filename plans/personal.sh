@@ -5,10 +5,8 @@
 set -euxo pipefail
 
 # https://stackoverflow.com/questions/496702/can-a-shell-script-set-environment-variables-of-the-calling-shell
-# https://github.com/jmpage/dhow/blob/main/provision/scripts/install-arkenfox.sh
 
-# gremlin xinstall / xsetup should print a message that it would and continue
-
+gremlin feature yadm install
 #gremlin feature dotfiles install # makes dotfiles command available?
 
 gremlin feature emacs install
