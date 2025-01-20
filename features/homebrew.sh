@@ -20,7 +20,7 @@ install() {
     esac
 }
 
-install_package() {
+run() {
     if [ "$#" -lt 1 ]; then
        echo "Invalid number of arguments: expected at least 1, received $#"
        exit 1
@@ -41,9 +41,9 @@ main() {
             shift 1
             install "$@"
             ;;
-        install-package)
+        run)
             shift 1
-            install_package "$@"
+            run "$@"
             ;;
         *)
             echo "$0: invalid command: $1"

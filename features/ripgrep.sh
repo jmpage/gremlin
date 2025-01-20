@@ -10,7 +10,7 @@ install() {
             as_root apt-get -y install ripgrep
             ;;
         Darwin)
-            gremlin feature homebrew install-package ripgrep
+            gremlin feature homebrew run install ripgrep
             ;;
         *)
             echo "Ripgrep is not supported for operating system $(uname)"

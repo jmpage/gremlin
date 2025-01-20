@@ -6,14 +6,12 @@ set -euxo pipefail
 
 # https://stackoverflow.com/questions/496702/can-a-shell-script-set-environment-variables-of-the-calling-shell
 
-gremlin feature yadm install
-#gremlin feature dotfiles install # makes dotfiles command available?
+gremlin feature dotfiles install
 
+gremlin feature ripgrep install
 gremlin feature emacs install
 #gremlin feature emacs-prelude install
-gremlin feature ripgrep install
 
-#gremlin setup emacs-prelude-personal
 #gremlin feature dotfiles link-prelude-personal
 
 gremlin feature cursor install
