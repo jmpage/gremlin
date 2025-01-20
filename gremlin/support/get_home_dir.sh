@@ -2,6 +2,7 @@
 
 get_home_dir () {
     if [[ -z "$USER" ]]; then
+        # shellcheck disable=SC2016
         echo '$USER not set!' 1>&2
         exit 1
     fi

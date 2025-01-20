@@ -31,7 +31,7 @@ cursor_install_appimage() {
 
     cd /opt/cursor
     as_root /opt/cursor/Cursor.AppImage --appimage-extract
-    as_root chown -R $USER:$USER /opt/cursor/squashfs-root
+    as_root chown -R "$USER:$USER" /opt/cursor/squashfs-root
     as_root chown root:root /opt/cursor/squashfs-root/chrome-sandbox
     as_root chmod 4755 /opt/cursor/squashfs-root/chrome-sandbox
 
@@ -132,7 +132,7 @@ cursor_install_extension() {
         return
     fi
 
-    $cursor_bin --install-extension $1
+    $cursor_bin --install-extension "$1"
     echo "Cursor extension $1 installed."
 }
 

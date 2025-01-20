@@ -19,7 +19,7 @@ install() {
 }
 
 is_installed() {
-    return $([[ -e "$(get_emacs_dir)/core/preslude-core.el" ]]; echo "$?")
+    return "$([[ -e "$(get_emacs_dir)/core/preslude-core.el" ]]; echo "$?")"
 }
 
 main() {

@@ -37,7 +37,7 @@ install_dmg() {
     hdiutil attach "$tempfile"
 
     codesign_output="$(codesign -dvv /Volumes/Emacs/Emacs.app 2>&1)"
-    if ! echo $codesign_output | grep 'Authority=Developer ID Application: Galvanix (5BRAQAFB8B)'; then
+    if ! echo "$codesign_output" | grep 'Authority=Developer ID Application: Galvanix (5BRAQAFB8B)'; then
         echo "Signature check for emacs failed! Check $tempfile"
         hdiutil unmount /Volumes/Emacs
         exit 1
@@ -49,7 +49,7 @@ install_dmg() {
     set +e
     mtree_status=$(mtree -p /Volumes/Emacs/Emacs.app < "$temptreefile"; echo $?)
     set -e
-    case mtree_status in
+    case "$mtree_status" in
         0)
             echo "Emacs already matches installed version"
             ;;

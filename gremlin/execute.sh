@@ -7,8 +7,8 @@ set -euo pipefail
 gremlin() {
     set +u
     if [[ -z "$GREMLIN_CHECKPOINT_DIR" ]]; then
-        local tempdir
         GREMLIN_CHECKPOINT_DIR="$(mktemp -d -u -p /tmp/gremlin-checkpoints)"
+        export GREMLIN_CHECKPOINT_DIR
         mkdir -p "$GREMLIN_CHECKPOINT_DIR"
     fi
     set -u
@@ -47,7 +47,7 @@ gremlin() {
             if [[ skip_checkpoint -eq 0 ]]; then
                 ./gremlin/execute.sh "./features/$feature.sh" "$@"
             else
-                checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-$(echo $@ | sed 's/ /-/g')"
+                checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-${*// /-}"
                 if [[ -f "$checkpoint" ]]; then
                     cat "$checkpoint"
                 else
@@ -61,7 +61,8 @@ gremlin() {
                 exit 1
             fi
 
-            . ./gremlin/support/$2.sh
+            # shellcheck disable=SC1090
+            . "./gremlin/support/$2.sh"
             ;;
         *)
             echo "Unknown command $1"
@@ -70,4 +71,5 @@ gremlin() {
     esac
 }
 
-. $@
+# shellcheck disable=SC1090
+. "$@"

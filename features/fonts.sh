@@ -24,13 +24,11 @@ install() {
     local filename
     local fontdir
     local fonts_installed
-    local tempfile
     fontdir="$(get_font_dir)"
-    fonts_intstalled=0
-    tempfile="$(mktemp --dry-run)"
+    fonts_installed=0
 
     for url in "$@"; do
-        filename="$(echo $url | grep -Eo '[^/]+$' | sed 's/%20/ /g')"
+        filename="$(echo "$url" | grep -Eo '[^/]+$' | sed 's/%20/ /g')"
 
         if [[ -e "$fontdir/$filename" ]]; then
             echo "Skipping installation of $filename as it already exists in $fontdir"

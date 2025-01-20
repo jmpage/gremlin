@@ -6,9 +6,9 @@ gremlin support as_root
 
 install() {
     local
-    tag="$(get_tag $@)"
+    tag="$(get_tag "$@")"
 
-    if [[ "$tag" -eq "v$(get_installed_version)" ]]; then
+    if [[ "$tag" == "v$(get_installed_version)" ]]; then
         echo "Skipping install of Alacritty $tag as it is already installed."
         return 0
     fi
@@ -45,7 +45,7 @@ install_dmg() {
     set +e
     mtree_status=$(mtree -p /Volumes/Alacritty/Alacritty.app < "$temptreefile"; echo $?)
     set -e
-    case mtree_status in
+    case "$mtree_status" in
         0)
             echo "Alacritty already matches installed version"
             ;;
@@ -66,7 +66,7 @@ install_dmg() {
 }
 
 get_tag() {
-    if [[ -z "$1 " ]]; then
+    if [[ -z "$1" ]]; then
         curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq 'map(select(.name | contains("-rc") | not)) | first .name'
     else
         echo "v$1"
@@ -124,10 +124,11 @@ install_linux() {
 
     tempfile="$(mktemp --dry-run --suffix=.tar.gz)"
     tempdir="$(mktemp --directory --suffix=-alacritty-src)"
-    curl -L -o "$tempfile" "$(get_tarball_url $tag)"
+    curl -L -o "$tempfile" "$(get_tarball_url "$tag")"
     tar -xzf "$tempfile" -C "$tempdir"
 
-    cd "$tempdir/$(ls $tempdir)"
+    # Assumption: there is only one directory in the tarball
+    cd "$tempdir/$(ls "$tempdir")"
 
     gremlin plugin asdf execute asdf local rust latest
     gremlin plugin asdf execute cargo build --release

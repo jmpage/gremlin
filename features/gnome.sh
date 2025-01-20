@@ -22,7 +22,7 @@ main() {
     case "$1" in
         configure)
             shift 1
-            configure "$@
+            configure "$@"
             ;;
         *)
             echo "$0: invalid command: $1"

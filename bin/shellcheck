@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s globstar
+
+find_scripts() {
+    local files
+    files=()
+    for path in bin/**/* features/**/* gremlin.sh gremlin/**/* plans/**/*; do
+        if [[ -f "$path" ]]; then
+            files+=("$path")
+        fi
+    done
+
+    echo "${files[@]}"
+}
+
+# shellcheck disable=SC2046
+shellcheck $(find_scripts)

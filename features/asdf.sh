@@ -25,8 +25,9 @@ install() {
 }
 
 execute() {
+    # shellcheck disable=SC1091
     . "$(get_asdf_dir)/asdf.sh"
-    $@
+    "$@"
 }
 
 run() {

@@ -6,7 +6,7 @@ set -euo pipefail
 
 gremlin_main() {
     local OPTIND
-    while getopts ":hv" opt "${@}"; do
+    while getopts ":hd" opt "${@}"; do
         echo "opt: $opt, arg: ${OPTARG}"
         case ${opt} in
             h)
@@ -64,7 +64,7 @@ describe_plan() {
 
     # TODO: Rewrite this to be less hacky
     local endofheader_pos
-    endofheader_pos=$(cat "./plans/$1.sh" | sed -n '/^[^#]/{=;q;}')
+    endofheader_pos=$(sed -n '/^[^#]/{=;q;}' "./plans/$1.sh")
     head -n "$((endofheader_pos - 1))" "./plans/$1.sh" | tail -n "$((endofheader_pos - 2))" | sed -E 's/^# ?//'
 }
 

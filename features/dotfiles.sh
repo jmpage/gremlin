@@ -14,7 +14,7 @@ install() {
         else
             gremlin feature yadm run clone git@github.com:jmpage/dotfiles.git
         fi
-    elif [[ ! "$(gremlin feature -n yadm run remote get-url origin)" -eq 'git@github.com:jmpage/dotfiles.git' ]] && gremlin feature -n github check-ssh; then
+    elif [[ ! "$(gremlin feature -n yadm run remote get-url origin)" == 'git@github.com:jmpage/dotfiles.git' ]] && gremlin feature -n github check-ssh; then
         gremlin feature yadm run remote set-url origin git@github.com:jmpage/dotfiles.git
     fi
 }
