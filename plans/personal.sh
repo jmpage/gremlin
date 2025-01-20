@@ -23,7 +23,7 @@ gremlin feature cursor install-extension enkia.tokyo-night
 
 #gremlin feature alacritty install
 #gremlin feature ohmyzsh install
-#gremlin feature tmux install
+gremlin feature tmux install
 
 # maybe take a list for this?
 #gremlin feature fonts install #url (name)
