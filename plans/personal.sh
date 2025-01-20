@@ -23,10 +23,10 @@ gremlin feature cursor install-extension kahole.magit
 gremlin feature cursor install-extension enkia.tokyo-night
 
 gremlin feature zsh install
+gremlin feature oh-my-zsh install
 #gremlin feature asdf install
 #gremlin feature workspace setup
 #gremlin feature alacritty install
-#gremlin feature ohmyzsh install
 gremlin feature tmux install
 
 #gremlin feature firefox install
