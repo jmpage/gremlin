@@ -15,21 +15,44 @@ gremlin() {
 
     case "$1" in
         feature)
-            if [ "$#" -lt 2 ]; then
-                echo "Invalid number of arguments, expected: gremlin feature <name> ..."
+            shift 1
+
+            local skip_checkpoint
+            local OPTIND
+            while getopts ":n" opt "${@}"; do
+                echo "opt: $opt, arg: ${OPTARG}"
+                case ${opt} in
+                    n)
+                        skip_checkpoint=1
+                        ;;
+                    *)
+                        echo "Invalid option: ${OPTARG}"
+                        echo ""
+                        exit 1;
+                        ;;
+                esac
+            done
+            shift $((OPTIND -1))
+
+            if [ "$#" -lt 1 ]; then
+                echo "Invalid number of arguments, expected: gremlin feature [-n] <name> ..."
                 exit 1
             fi
 
             local checkpoint
             local feature
-            feature="$2"
-            shift 2
+            feature="$1"
+            shift 1
 
-            checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-$(echo $@ | sed 's/ /-/g')"
-            if [[ -f "$checkpoint" ]]; then
-                cat "$checkpoint"
+            if [[ skip_checkpoint -eq 0 ]]; then
+                ./gremlin/execute.sh "./features/$feature.sh" "$@"
             else
-                ./gremlin/execute.sh "./features/$feature.sh" "$@" > "$checkpoint"
+                checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-$(echo $@ | sed 's/ /-/g')"
+                if [[ -f "$checkpoint" ]]; then
+                    cat "$checkpoint"
+                else
+                    ./gremlin/execute.sh "./features/$feature.sh" "$@" > "$checkpoint"
+                fi
             fi
             ;;
         support)
