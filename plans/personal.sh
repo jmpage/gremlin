@@ -9,6 +9,7 @@ set -euxo pipefail
 #gremlin feature debian-backports setup
 #...
 
+gremlin feature curl install
 gremlin feature dotfiles install
 
 gremlin feature ripgrep install
@@ -21,9 +22,17 @@ gremlin feature cursor install
 gremlin feature cursor install-extension kahole.magit
 gremlin feature cursor install-extension enkia.tokyo-night
 
+#gremlin feature asdf install
+#gremlin feature zsh install
+#gremlin feature workspace setup
 #gremlin feature alacritty install
 #gremlin feature ohmyzsh install
 gremlin feature tmux install
+
+#gremlin feature firefox install
+#gremlin feature joplin install
+#gremlin feature joplin install-extension TODO
+#gremlin feature dropbox install
 
 # maybe take a list for this?
 #gremlin feature fonts install #url (name)
