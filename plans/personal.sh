@@ -12,10 +12,10 @@ set -euxo pipefail
 gremlin feature dotfiles install
 
 gremlin feature ripgrep install
+
 gremlin feature emacs install
 gremlin feature emacs-prelude install
-
-#gremlin feature dotfiles link-prelude-personal
+gremlin feature dotfiles link-prelude-personal
 
 gremlin feature cursor install
 gremlin feature cursor install-extension kahole.magit

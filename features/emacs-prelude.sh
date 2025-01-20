@@ -10,12 +10,16 @@ get_emacs_dir() {
 }
 
 install() {
-    if [[ -e "$(get_emacs_dir)/core/prelude-core.el" ]]; then
+    if is_installed; then
         echo 'Skipping prelude install as it is already present'
         return 0
     fi
 
     curl -L https://github.com/bbatsov/prelude/raw/master/utils/installer.sh | sh
+}
+
+is_installed() {
+    return $([[ -e "$(get_emacs_dir)/core/preslude-core.el" ]]; echo "$?")
 }
 
 main() {
@@ -26,12 +30,16 @@ main() {
     fi
 
     case "$1" in
-        get_emacs_dir)
+        get-emacs-dir)
             get_emacs_dir
             ;;
         install)
             shift 1
             install "$@"
+            ;;
+        is-installed)
+            # TODO: does this work correctly?
+            is_installed
             ;;
         *)
             echo "$0: invalid command: $1"
