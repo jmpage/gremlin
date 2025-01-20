@@ -13,7 +13,7 @@ set -euxo pipefail
 
 gremlin feature emacs install
 #gremlin feature emacs-prelude install
-#gremlin feature ripgrep install
+gremlin feature ripgrep install
 
 #gremlin setup emacs-prelude-personal
 #gremlin feature dotfiles link-prelude-personal
