@@ -2,11 +2,7 @@
 
 set -euo pipefail
 
-gremlin support as_root
-
-check_ssh() {
-    ssh -T git@github.com 2>&1 | grep success
-}
+gremlin support get_home_dir
 
 add_known_hosts() {
     local line
@@ -19,19 +15,12 @@ $(curl --silent https://api.github.com/meta | jq --raw-output '"github.com "+.ss
 EOF
 }
 
+check_ssh() {
+    ssh -T git@github.com 2>&1 | grep success
+}
+
 known_hosts_file() {
-    case $(uname) in
-        Linux)
-            echo "/home/$USER/.ssh/known_hosts"
-            ;;
-        Darwin)
-            echo "/Users/$USER/.ssh/known_hosts"
-            ;;
-        *)
-            echo "Unhandled operating system $(uname)"
-            exit 1
-            ;;
-    esac
+    echo "$(get_home_dir)/.ssh/known_hosts"
 }
 
 main() {

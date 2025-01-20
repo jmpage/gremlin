@@ -6,11 +6,14 @@ set -euxo pipefail
 
 # https://stackoverflow.com/questions/496702/can-a-shell-script-set-environment-variables-of-the-calling-shell
 
+#gremlin feature debian-backports setup
+#...
+
 gremlin feature dotfiles install
 
 gremlin feature ripgrep install
 gremlin feature emacs install
-#gremlin feature emacs-prelude install
+gremlin feature emacs-prelude install
 
 #gremlin feature dotfiles link-prelude-personal
 

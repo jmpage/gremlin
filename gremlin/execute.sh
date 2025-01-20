@@ -27,10 +27,9 @@ gremlin() {
 
             checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-$(echo $@ | sed 's/ /-/g')"
             if [[ -f "$checkpoint" ]]; then
-                echo "Skipping feature which is already completed $feature $@"
+                cat "$checkpoint"
             else
-                touch "$checkpoint"
-                ./gremlin/execute.sh "./features/$feature.sh" "$@"
+                ./gremlin/execute.sh "./features/$feature.sh" "$@" > "$checkpoint"
             fi
             ;;
         support)
