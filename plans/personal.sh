@@ -34,7 +34,10 @@ gremlin feature alacritty install
 #gremlin feature joplin install-extension TODO
 #gremlin feature dropbox install
 
-# maybe take a list for this?
-#gremlin feature fonts install #url (name)
+gremlin feature fonts install \
+        'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold-Italic/FantasqueSansMNerdFont-BoldItalic.ttf' \
+        'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Italic/FantasqueSansMNerdFont-Italic.ttf' \
+        'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold/FantasqueSansMNerdFont-Bold.ttf' \
+        'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Regular/FantasqueSansMNerdFont-Regular.ttf'
 
 # TODO gsettings / kde / etc
