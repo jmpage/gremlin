@@ -11,7 +11,7 @@ set -euxo pipefail
 
 #gremlin feature dotfiles install # makes dotfiles command available?
 
-#gremlin feature emacs install
+gremlin feature emacs install
 #gremlin feature emacs-prelude install
 #gremlin feature ripgrep install
 
