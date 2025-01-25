@@ -1,4 +1,4 @@
-#!/user/bin/env bash
+#!/usr/bin/env bash
 
 get_home_dir () {
     if [[ -z "$USER" ]]; then

@@ -1,4 +1,4 @@
-#!/user/bin/env bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -149,14 +149,14 @@ install_linux() {
     as_root mkdir -p /usr/local/share/man/man1
 
     gzip -kf ./extra/alacritty.man
-    as_root cp ./extra/alacritty.man.gz /user/local/share/man/man1/alacritty.1.gz
-    as_root chown root:root /user/local/share/man/man1/alacritty.1.gz
-    as_root chmod 0644 /user/local/share/man/man1/alacritty.1.gz
+    as_root cp ./extra/alacritty.man.gz /usr/local/share/man/man1/alacritty.1.gz
+    as_root chown root:root /usr/local/share/man/man1/alacritty.1.gz
+    as_root chmod 0644 /usr/local/share/man/man1/alacritty.1.gz
 
     gzip -kf ./extra/alacritty-msg.man
-    as_root cp ./extra/alacritty-msg.man.gz /user/local/share/man/man1/alacritty-msg.1.gz
-    as_root chown root:root /user/local/share/man/man1/alacritty-msg.1.gz
-    as_root chmod 0644 /user/local/share/man/man1/alacritty-msg.1.gz
+    as_root cp ./extra/alacritty-msg.man.gz /usr/local/share/man/man1/alacritty-msg.1.gz
+    as_root chown root:root /usr/local/share/man/man1/alacritty-msg.1.gz
+    as_root chmod 0644 /usr/local/share/man/man1/alacritty-msg.1.gz
 
     rm -rf "$tempdir"
     rm "$tempfile"
