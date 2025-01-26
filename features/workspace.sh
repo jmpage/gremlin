@@ -5,8 +5,8 @@ set -euo pipefail
 gremlin support get_home_dir
 
 create() {
-    mkdir -p "$(get_home_dir)/oss"
-    mkdir -p "$(get_home_dir)/personal"
+    mkdir -p "$(get_home_dir)/workspace/oss"
+    mkdir -p "$(get_home_dir)/workspace/personal"
 }
 
 main() {
