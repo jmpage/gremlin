@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+install_deb() {
+    local tempfile
+    local url
+    url="$(curl -s https://api.github.com/repos/quickemu-project/quickemu/releases/latest | jq '.assets[].browser_download_url')"
+
+    tempfile="$(mktemp --dry-run --suffix=-quickemu.deb)"
+    curl -L -o "$tempfile" "$url"
+
+    sudo apt-get install -y "$tempfile"
+    sudo apt-get install -y xorriso
+
+    rm "$tempfile"
+}
+
+download_iso() {
+    cd qemu
+    quickget debian 12.9.0 netinst
+    cd ..
+    mv qemu/debian-12.9.0-netinst/debian-12.9.0-amd64-netinst.iso debian-12.9.0-netinst/debian-12.9.0-amd64-netinst.iso.orig
+}
+
+unpack_iso() {
+    sudo rm -rf qemu/debian-12.9.0-netinst/isofiles
+    mkdir -p qemu/debian-12.9.0-netinst/isofiles
+    xorriso -osirrox on -indev qemu/debian-12.9.0-netinst/debian-12.9.0-amd64-netinst.iso.orig -extract / qemu/debian-12.9.0-netinst/isofiles
+}
+
+# NOTE: This follows instructions for adding preseeds: https://wiki.debian.org/DebianInstaller/Preseed/EditIso
+add_preseed() {
+    cd qemu
+
+    chmod +w -R debian-12.9.0-netinst/isofiles/install.amd/
+    gunzip debian-12.9.0-netinst/isofiles/install.amd/initrd.gz
+    echo preseed.cfg | cpio -H newc -o -A -F debian-12.9.0-netinst/isofiles/install.amd/initrd
+    gzip debian-12.9.0-netinst/isofiles/install.amd/initrd
+    chmod -w -R debian-12.9.0-netinst/isofiles/install.amd/
+
+    cd ..
+}
+
+recalculate_checksums() {
+    cd qemu/debian-12.9.0-netinst/isofiles
+
+    chmod +w md5sum.txt
+    set +eo pipefail
+    find -follow -type f ! -name md5sum.txt -print0 | xargs -0 md5sum > md5sum.txt
+    set -eo pipefail
+    chmod -w md5sum.txt
+
+    cd ../../..
+}
+
+patch_isolinux() {
+    chmod +w qemu/debian-12.9.0-netinst/isofiles/isolinux/txt.cfg
+    patch -p0 --ignore-whitespace debian-12.9.0-netinst/isofiles/isolinux/txt.cfg <qemu/txt.cfg.diff
+    chmod -w qemu/debian-12.9.0-netinst/isofiles/isolinux/txt.cfg
+}
+
+dump_mbr() {
+    # Extract MBR template file to disk
+    dd if="qemu/debian-12.9.0-netinst/debian-12.9.0-amd64-netinst.iso" bs=1 count=432 of="qemu/debian-12.9.0-netinst/isohdpfx.bin"
+}
+
+# NOTE: This follows the following process: https://wiki.debian.org/RepackBootableISO
+repack_iso() {
+    local isofiles
+    local mbr_template
+    local orig_iso
+    isofiles=qemu/debian-12.9.0-netinst/isofiles
+    mbr_template=qemu/debian-12.9.0-netinst/isohdpfx.bin
+    iso=qemu/debian-12.9.0-netinst/debian-12.9.0-amd64-netinst.iso
+
+    # From isofiles/.disk/mkisofs:
+    # - isohybrid-mbr pointed at previously extracted binfile
+    # - -o modified to point at "$iso"
+    # - removed jigdo options
+    # - removed -checksum-list
+    xorriso \
+        -as \
+        mkisofs \
+        -r \
+        -checksum_algorithm_iso sha256,sha512 \
+        -V 'Debian 12.9.0 amd64 n' \
+        -o "$iso" \
+        -J \
+        -joliet-long \
+        -cache-inodes \
+        -isohybrid-mbr "$mbr_template" \
+        -b isolinux/isolinux.bin \
+        -c isolinux/boot.cat \
+        -boot-load-size 4 \
+        -boot-info-table \
+        -no-emul-boot \
+        -eltorito-alt-boot \
+        -e boot/grub/efi.img \
+        -no-emul-boot \
+        -isohybrid-gpt-basdat \
+        -isohybrid-apm-hfsplus \
+        "$isofiles"
+
+    # TODO: call this orig_iso.repack.iso instead and point the vm config at that instead
+}
+
+setup() {
+    if ! which quickemu; then
+        install_deb
+    fi
+
+    download_iso
+    unpack_iso
+    dump_mbr
+    add_preseed
+    patch_isolinux
+    recalculate_checksums
+    repack_iso
+}
+
+case "$1" in
+    setup)
+        setup
+        ;;
+    start)
+        quickemu --vm qemu/debian-12.9.0-netinst.conf
+        ;;
+    kill)
+        quickemu --vm qemu/debian-12.9.0-netinst.conf --kill
+        ;;
+    ?)
+    echo "Invalid command: $1"
+    exit 1
+    ;;
+esac
+
+# TODO: Fix installer boot (non graphical because of which initrd I've modified) so that it doesn't fail to read initrd
+# TODO: Fix isolinux boot so that it automatically begins installation
+# https://wiki.debian.org/DebianInstaller/Preseed#Adding_the_preseed_file_to_the_installer.27s_initrd.gz
+# https://askubuntu.com/questions/1022392/preseed-cfg-installed-in-initrd-root-not-being-recognized-in-ubuntu-installation
+# https://github.com/coreprocess/linux-unattended-installation/blob/master/ubuntu/20.04/custom/boot-menu.patch
+# https://wiki.debian.org/DebianInstaller/Preseed#Loading_the_preseeding_file_from_a_webserver
+# https://superuser.com/questions/1563530/automate-the-selection-of-isolinux-boot-menu-options
+# https://live-team.pages.debian.net/live-manual/html/live-manual/customizing-installer.en.html
+# https://github.com/opencollab/qemu-debian-install-pxe-preseed/blob/master/boot.sh
+# https://sigmaris.info/blog/2019/04/automating-debian-install-qemu/
