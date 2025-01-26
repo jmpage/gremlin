@@ -22,6 +22,7 @@ main() {
     branch="main"
     gremlin_dir="$HOME/.gremlin"
 
+    local OPTARG
     local OPTIND
     while getopts ":hb:d:" opt "${@}"; do
         case ${opt} in

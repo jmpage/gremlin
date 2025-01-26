@@ -5,9 +5,9 @@
 set -euo pipefail
 
 gremlin_main() {
+    local OPTARG
     local OPTIND
     while getopts ":hd" opt "${@}"; do
-        echo "opt: $opt, arg: ${OPTARG}"
         case ${opt} in
             h)
                 print_help

@@ -20,9 +20,9 @@ gremlin() {
             local skip_checkpoint
             skip_checkpoint=0
 
+            local OPTARG
             local OPTIND
             while getopts ":n" opt "${@}"; do
-                echo "opt: $opt, arg: ${OPTARG}"
                 case ${opt} in
                     n)
                         skip_checkpoint=1
