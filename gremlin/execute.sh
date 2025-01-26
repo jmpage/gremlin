@@ -18,6 +18,8 @@ gremlin() {
             shift 1
 
             local skip_checkpoint
+            skip_checkpoint=0
+
             local OPTIND
             while getopts ":n" opt "${@}"; do
                 echo "opt: $opt, arg: ${OPTARG}"
@@ -44,7 +46,7 @@ gremlin() {
             feature="$1"
             shift 1
 
-            if [[ skip_checkpoint -eq 0 ]]; then
+            if [[ "$skip_checkpoint" -eq 0 ]]; then
                 ./gremlin/execute.sh "./features/$feature.sh" "$@"
             else
                 checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-${*// /-}"
