@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+#
+# Execute this script to install gremlin on a fresh system
+
+set -euo pipefail
+
+install_git() {
+    if which git; then
+        return 0
+    elif which apt-get; then
+        sudo apt-get install -y git
+    else
+        echo "git not found on path and unable to automatically install"
+        exit 1
+    fi
+}
+
+main() {
+    local branch
+    local gremlin_dir
+    local gremlin_plan
+    branch="main"
+    gremlin_dir="$HOME/.gremlin"
+
+    local OPTIND
+    while getopts ":hb:d:" opt "${@}"; do
+        case ${opt} in
+            b)
+                branch="$OPTARG"
+                ;;
+            d)
+                gremlin_dir="$OPTARG"
+                ;;
+            h)
+                print_help
+                exit 0
+                ;;
+            ?)
+                echo "Invalid option: ${OPTARG}"
+                echo ""
+                print_help
+                exit 1;
+                ;;
+        esac
+    done
+    shift $((OPTIND -1))
+
+    if [ "$#" -lt 1 ]; then
+        echo "Invalid number of arguments: expected at least 1, received $#"
+        echo ""
+        print_help
+        exit 1
+    fi
+
+    gremlin_plan="$1"
+
+    install_git
+
+    echo "Cloning branch $branch of the gremlin repository to $gremlin_dir and executing plan $gremlin_plan"
+
+    git clone --branch "$branch" https://github.com/jmpage/gremlin.git "$gremlin_dir"
+    cd "$gremlin_dir"
+    ./gremlin.sh execute "$gremlin_plan"
+}
+
+print_help() {
+    echo "USAGE: $0 [-b branch] [-d directory] [-h] <plan>"
+    echo ""
+    echo "Installs gremlin and executes the given plan"
+    echo ""
+    echo "OPTIONS"
+    echo ""
+    echo "  -b - the branch to checkout in the gremlin repository (default: main)"
+    echo ""
+    echo "  -d - the directory to checkout the gremlin repository to (default: $HOME/.gremlin)"
+    echo ""
+    echo "  -h - show this help"
+}
+
+main "$@"

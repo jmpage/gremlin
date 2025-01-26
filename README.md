@@ -9,6 +9,15 @@ two components:
 2. Plans - these are custom plans which I have written for
    bootstrapping various systems of mine
 
+## Quick Start
+
+Replace `<plan>` below with a named plan, such as "personal", and
+execute in a terminal.
+
+``` shell
+wget -nv -O- https://raw.githubusercontent.com/jmpage/gremlin/refs/heads/main/bootstrap | /usr/bin/env bash /dev/stdin <plan>
+```
+
 ## File Structure
 
 Directory | Description
