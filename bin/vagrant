@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+setup() {
+    vagrant up
+    vagrant halt
+    vagrant snapshot save base
+}
+
+run_test() {
+    local branch
+    local plan
+    branch=$1
+    plan=$2
+
+    vagrant halt
+    vagrant snapshot restore base
+    vagrant up
+
+    vagrant ssh -c "wget -nv -O- https://raw.githubusercontent.com/jmpage/gremlin/refs/heads/$branch/bootstrap | /usr/bin/env bash /dev/stdin -b $branch $plan"
+}
+
+run_tests() {
+    # TODO: default to current branch and allow branch to be specified
+    run_test bash-based-bootstrap personal
+}
+
+cleanup() {
+    vagrant destroy
+}
+
+case "$1" in
+    setup)
+        setup
+        ;;
+    test)
+        run_tests
+        ;;
+    cleanup)
+        cleanup
+        ;;
+    *)
+        echo "Unknown command $1"
+        exit 1
+        ;;
+esac
