@@ -3,6 +3,13 @@
 set -euo pipefail
 
 gremlin support as_root
+gremlin support get_home_dir
+
+clone() {
+    # NOTE: When cloning outside of the home directory, new files will be staged and deleted
+    cd "$(get_home_dir)"
+    "$(yadm_bin)" clone "$@"
+}
 
 install() {
     case $(uname) in
@@ -27,6 +34,10 @@ main() {
     fi
 
     case "$1" in
+        clone)
+            shift 1
+            clone "$@"
+            ;;
         install)
             shift 1
             install "$@"

@@ -10,9 +10,9 @@ install() {
 
     if ! yadm status; then
         if ! gremlin feature -n github check-ssh; then
-            gremlin feature yadm run clone https://github.com/jmpage/dotfiles.git
+            gremlin feature yadm clone https://github.com/jmpage/dotfiles.git
         else
-            gremlin feature yadm run clone git@github.com:jmpage/dotfiles.git
+            gremlin feature yadm clone git@github.com:jmpage/dotfiles.git
         fi
     elif [[ ! "$(gremlin feature -n yadm run remote get-url origin)" == 'git@github.com:jmpage/dotfiles.git' ]] && gremlin feature -n github check-ssh; then
         gremlin feature yadm run remote set-url origin git@github.com:jmpage/dotfiles.git
