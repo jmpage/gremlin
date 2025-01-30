@@ -67,14 +67,14 @@ install_dmg() {
 
 get_tag() {
     if [[ "$#" -eq 0 ]]; then
-        curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq 'map(select(.name | contains("-rc") | not)) | first .name'
+        curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq --raw-output 'map(select(.name | contains("-rc") | not)) | first .name'
     else
         echo "v$1"
     fi
 }
 
 get_tarball_url() {
-    curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq "map(select(.name == \"$1\")) | first .tarball_url"
+    curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq --raw-output "map(select(.name == \"$1\")) | first .tarball_url"
 }
 
 get_alacritty_bin() {
