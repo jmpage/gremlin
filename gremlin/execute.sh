@@ -2,7 +2,7 @@
 #
 # Loads "DSL" and executes given plan
 
-set -euo pipefail
+set -euxo pipefail
 
 gremlin() {
     set +u
