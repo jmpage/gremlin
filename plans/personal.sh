@@ -25,9 +25,9 @@ gremlin feature dotfiles link-prelude-personal
 
 #gremlin feature zsh install
 #gremlin feature oh-my-zsh install
-#gremlin feature asdf install
+gremlin feature asdf install
 #gremlin feature tmux install
-#gremlin feature alacritty install
+gremlin feature alacritty install
 
 gremlin feature fonts install \
         'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/patched-fonts/FantasqueSansMono/Bold-Italic/FantasqueSansMNerdFont-BoldItalic.ttf' \
