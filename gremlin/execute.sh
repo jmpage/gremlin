@@ -43,6 +43,8 @@ gremlin() {
 
             local checkpoint
             local feature
+            local hashed_args
+            local sanitized_args
             feature="$1"
             shift 1
 
@@ -52,7 +54,9 @@ gremlin() {
                 fi
                 ./gremlin/execute.sh "./features/$feature.sh" "$@"
             else
-                checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-${*// /-}"
+                hashed_args="$(echo "$*" | md5sum | cut -c -32)"
+                sanitized_args="$(echo "$*" | sed -r 's/[^a-zA-Z0-9]/-/g' | cut -c 32)"
+                checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-$sanitized_args-$hashed_args"
                 if [[ -f "$checkpoint" ]]; then
                     cat "$checkpoint"
                 else
