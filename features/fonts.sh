@@ -27,6 +27,8 @@ install() {
     fontdir="$(get_font_dir)"
     fonts_installed=0
 
+    mkdir -p "$fontdir"
+
     for url in "$@"; do
         filename="$(echo "$url" | grep -Eo '[^/]+$' | sed 's/%20/ /g')"
 
