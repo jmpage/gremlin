@@ -3,7 +3,12 @@
 set -euo pipefail
 
 gsettings_unbind() {
-    gsettings list-recursively | grep "$1" | awk '{print $1, $2, "[]"}' | xargs -n3 gsettings set
+    local gs_args
+    gs_args="$(gsettings list-recursively | grep "$1" | awk '{print $1, $2, "[]"}')"
+
+    if [[ -n "$gs_args" ]]; then
+        echo "$gs_args" | xargs -n3 gsettings set
+    fi
 }
 
 configure() {
