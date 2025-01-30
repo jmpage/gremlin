@@ -7,7 +7,7 @@ gremlin support get_home_dir
 add_known_hosts() {
     local line
     while IFS="" read -r line || [ -n "$line" ]; do
-        if ! grep "$line" <"$(known_hosts_file)"; then
+        if [[ ! -f "$(known_hosts_file)" ]] || ! grep "$line" <"$(known_hosts_file)"; then
            echo "$line" >> "$(known_hosts_file)"
         fi
     done <<EOF
