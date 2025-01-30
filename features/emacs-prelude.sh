@@ -15,11 +15,11 @@ install() {
         return 0
     fi
 
-    curl -L https://github.com/bbatsov/prelude/raw/master/utils/installer.sh | sh
+    curl --silent --location https://github.com/bbatsov/prelude/raw/master/utils/installer.sh | sh
 }
 
 is_installed() {
-    return "$([[ -e "$(get_emacs_dir)/core/preslude-core.el" ]]; echo "$?")"
+    [[ -e "$(get_emacs_dir)/core/prelude-core.el" ]]
 }
 
 main() {
@@ -38,7 +38,6 @@ main() {
             install "$@"
             ;;
         is-installed)
-            # TODO: does this work correctly?
             is_installed
             ;;
         *)
