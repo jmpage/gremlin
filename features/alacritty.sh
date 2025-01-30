@@ -66,7 +66,7 @@ install_dmg() {
 }
 
 get_tag() {
-    if [[ -z "$1" ]]; then
+    if [[ "$#" -eq 0 ]]; then
         curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq 'map(select(.name | contains("-rc") | not)) | first .name'
     else
         echo "v$1"
