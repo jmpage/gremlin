@@ -47,6 +47,9 @@ gremlin() {
             shift 1
 
             if [[ "$skip_checkpoint" -eq 0 ]]; then
+                if [[ "$*" == 'get-emacs-dir' ]]; then
+                    echo "DEBUG: $(./gremlin/execute.sh "./features/$feature.sh" "$@")" 1>&2
+                fi
                 ./gremlin/execute.sh "./features/$feature.sh" "$@"
             else
                 checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-${*// /-}"

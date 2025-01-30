@@ -4,6 +4,8 @@
 
 set -euo pipefail
 
+export PS4='+${LINENO}: '
+
 gremlin_main() {
     local OPTARG
     local OPTIND
