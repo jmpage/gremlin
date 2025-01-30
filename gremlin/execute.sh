@@ -60,6 +60,7 @@ gremlin() {
                 if [[ -f "$checkpoint" ]]; then
                     cat "$checkpoint"
                 else
+                    echo "pwd: $(pwd)"
                     ./gremlin/execute.sh "./features/$feature.sh" "$@" > "$checkpoint"
                 fi
             fi
