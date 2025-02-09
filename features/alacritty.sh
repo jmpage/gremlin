@@ -106,7 +106,8 @@ install_linux_build_dependencies() {
             libxcb-xfixes0-dev \
             libxkbcommon-dev \
             python3 \
-            gzip
+            gzip \
+            scdoc
 
     gremlin feature asdf install
     gremlin feature asdf run plugin add rust
@@ -147,16 +148,14 @@ install_linux() {
     as_root update-desktop-database
 
     as_root mkdir -p /usr/local/share/man/man1
+    as_root mkdir -p /usr/local/share/man/man5
 
-    gzip -kf ./extra/alacritty.man
-    as_root cp ./extra/alacritty.man.gz /usr/local/share/man/man1/alacritty.1.gz
-    as_root chown root:root /usr/local/share/man/man1/alacritty.1.gz
-    as_root chmod 0644 /usr/local/share/man/man1/alacritty.1.gz
+    scdoc < extra/man/alacritty.1.scd | gzip -c | as_root tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null
+    scdoc < extra/man/alacritty-msg.1.scd | gzip -c | as_root tee /usr/local/share/man/man1/alacritty-msg.1.gz > /dev/null
+    scdoc < extra/man/alacritty.5.scd | gzip -c | as_root tee /usr/local/share/man/man5/alacritty.5.gz > /dev/null
+    scdoc < extra/man/alacritty-bindings.5.scd | gzip -c | as_root tee /usr/local/share/man/man5/alacritty-bindings.5.gz > /dev/null
 
-    gzip -kf ./extra/alacritty-msg.man
-    as_root cp ./extra/alacritty-msg.man.gz /usr/local/share/man/man1/alacritty-msg.1.gz
-    as_root chown root:root /usr/local/share/man/man1/alacritty-msg.1.gz
-    as_root chmod 0644 /usr/local/share/man/man1/alacritty-msg.1.gz
+    #as_root chmod 0644 /usr/local/share/man/man1/alacritty.1.gz
 
     rm -rf "$tempdir"
     rm "$tempfile"
