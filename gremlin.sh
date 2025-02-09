@@ -5,6 +5,7 @@
 set -euo pipefail
 
 export PS4='+${LINENO}: '
+export GREMLIN_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 gremlin_main() {
     local OPTARG
@@ -66,8 +67,8 @@ describe_plan() {
 
     # TODO: Rewrite this to be less hacky
     local endofheader_pos
-    endofheader_pos=$(sed -n '/^[^#]/{=;q;}' "./plans/$1.sh")
-    head -n "$((endofheader_pos - 1))" "./plans/$1.sh" | tail -n "$((endofheader_pos - 2))" | sed -E 's/^# ?//'
+    endofheader_pos=$(sed -n '/^[^#]/{=;q;}' "$GREMLIN_DIR/plans/$1.sh")
+    head -n "$((endofheader_pos - 1))" "$GREMLIN_DIR/plans/$1.sh" | tail -n "$((endofheader_pos - 2))" | sed -E 's/^# ?//'
 }
 
 execute_plan() {
@@ -78,11 +79,11 @@ execute_plan() {
         exit 1
     fi
 
-    ./gremlin/execute.sh "./plans/$1.sh"
+    "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/plans/$1.sh"
 }
 
 list_plans() {
-    for file in ./plans/*.sh; do
+    for file in "$GREMLIN_DIR/plans"/*.sh; do
         echo "$file" | sed -nE 's/.*\/([a-z0-9_-]+).sh/\1/p'
     done
 }
@@ -108,3 +109,4 @@ print_help() {
 }
 
 gremlin_main "$@"
+qq

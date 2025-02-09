@@ -50,9 +50,9 @@ gremlin() {
 
             if [[ "$skip_checkpoint" -eq 1 ]]; then
                 if [[ "$*" == 'get-emacs-dir' ]]; then
-                    echo "DEBUG: $(./gremlin/execute.sh "./features/$feature.sh" "$@")" 1>&2
+                    echo "DEBUG: $("$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@")" 1>&2
                 fi
-                ./gremlin/execute.sh "./features/$feature.sh" "$@"
+                "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@"
             else
                 hashed_args="$(echo "$*" | md5sum | cut -c -32)"
                 sanitized_args="$(echo "$*" | sed -r 's/[^a-zA-Z0-9]/-/g' | cut -c 32)"
@@ -61,7 +61,7 @@ gremlin() {
                     cat "$checkpoint"
                 else
                     echo "pwd: $(pwd)"
-                    ./gremlin/execute.sh "./features/$feature.sh" "$@" > "$checkpoint"
+                    "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@" > "$checkpoint"
                 fi
             fi
             ;;
@@ -72,7 +72,7 @@ gremlin() {
             fi
 
             # shellcheck disable=SC1090
-            . "./gremlin/support/$2.sh"
+            . "$GREMLIN_DIR/gremlin/support/$2.sh"
             ;;
         *)
             echo "Unknown command $1"
