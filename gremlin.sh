@@ -109,4 +109,3 @@ print_help() {
 }
 
 gremlin_main "$@"
-qq
