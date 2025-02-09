@@ -19,14 +19,14 @@ gremlin feature emacs install
 gremlin feature emacs-prelude install
 gremlin feature dotfiles link-prelude-personal
 
-#gremlin feature cursor install
-#gremlin feature cursor install-extension kahole.magit
-#gremlin feature cursor install-extension enkia.tokyo-night
+gremlin feature cursor install
+gremlin feature cursor install-extension kahole.magit
+gremlin feature cursor install-extension enkia.tokyo-night
 
-#gremlin feature zsh install
-#gremlin feature oh-my-zsh install
+gremlin feature zsh install
+gremlin feature oh-my-zsh install
 gremlin feature asdf install
-#gremlin feature tmux install
+gremlin feature tmux install
 gremlin feature alacritty install
 
 gremlin feature fonts install \
