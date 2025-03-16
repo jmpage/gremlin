@@ -131,7 +131,7 @@ install_linux() {
     # Assumption: there is only one directory in the tarball
     cd "$tempdir/$(ls "$tempdir")"
 
-    gremlin feature asdf execute asdf local rust latest
+    gremlin feature asdf execute asdf set rust latest
     gremlin feature asdf execute cargo build --release
 
     as_root cp ./target/release/alacritty /usr/local/bin/

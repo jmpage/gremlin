@@ -2,36 +2,77 @@
 
 set -euo pipefail
 
+gremlin support as_root
 gremlin support get_home_dir
 
-get_asdf_dir() {
-    echo "$(get_home_dir)/.asdf"
-}
-
 install() {
-    local asdf_dir
-    asdf_dir="$(get_asdf_dir)"
+    local
+    tag="$(get_tag "$@")"
 
-    if [[ -d "$asdf_dir" ]]; then
+    # TODO: check installed version
+
+    if which asdf; then
         echo "Asdf is already installed"
         return 0
     fi
 
-    git clone 'https://github.com/asdf-vm/asdf.git' "$asdf_dir"
-    cd "$asdf_dir"
-    git checkout "$(git describe --abbrev=0 --tags)"
+    case $(uname) in
+        Linux)
+            # Assumption: AMD64 architecture
+            download_and_install "$tag" linux amd64
+            ;;
+        Darwin)
+            install_macos
+            ;;
+        *)
+            echo "Asdf not supported for operating system $(uname)"
+            exit 1
+            ;;
+    esac
 
     run plugin update --all
 }
 
+install_macos() {
+    gremlin feature homebrew run install asdf
+}
+
+# $1 = version
+# $2 = platform (darwin|linux)
+# $3 = architecture (arm64|amd64|386)
+download_and_install() {
+    local download_url
+    local tempfile
+
+    # 2 = darwin, 3 = amd64
+    download_url="https://github.com/asdf-vm/asdf/releases/download/$1/asdf-$1-$2-$3.tar.gz"
+
+    tempfile="$(mktemp --dry-run --suffix=.tar.gz)"
+    curl -L -o "$tempfile" "$download_url"
+
+    as_root rm -f /usr/local/bin/asdf
+    as_root tar -xzf "$tempfile" --directory /usr/local/bin asdf
+
+    rm "$tempfile"
+}
+
 execute() {
-    # shellcheck disable=SC1091
-    . "$(get_asdf_dir)/asdf.sh"
+    export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+    # shellcheck disable=SC1090
+    . <(asdf completion bash)
     "$@"
 }
 
 run() {
-    "$(get_asdf_dir)/bin/asdf" "$@"
+    asdf "$@"
+}
+
+get_tag() {
+    if [[ "$#" -eq 0 ]]; then
+        curl -s https://api.github.com/repos/asdf-vm/asdf/tags | jq --raw-output 'first .name'
+    else
+        echo "v$1"
+    fi
 }
 
 main() {
