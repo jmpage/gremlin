@@ -19,7 +19,7 @@ run_test() {
     vagrant snapshot restore base
     vagrant up
 
-    vagrant ssh -c "wget -nv -O- https://raw.githubusercontent.com/jmpage/gremlin/refs/heads/$branch/bootstrap | /usr/bin/env bash /dev/stdin -b $branch $plan"
+    vagrant ssh -c "/vagrant/gremlin.sh execute $plan"
 }
 
 run_tests() {
