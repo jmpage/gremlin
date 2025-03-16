@@ -31,6 +31,7 @@ Vagrant.configure("2") do |config|
   SHELL
 
   config.vm.provision "shell", inline: <<~SHELL.strip
+    apt-get update
     apt-get install -y \
         task-gnome-desktop
   SHELL
