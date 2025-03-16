@@ -48,7 +48,7 @@ gremlin_main() {
         list)
             list_plans
             ;;
-        ?)
+        *)
             echo "Invalid command: $1"
             echo ""
             print_help
