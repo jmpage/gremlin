@@ -3,6 +3,7 @@
 set -euo pipefail
 
 setup() {
+    vagrant destroy --force
     vagrant up
     vagrant halt
     vagrant snapshot save base
