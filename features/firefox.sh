@@ -47,7 +47,7 @@ macos_install() {
     local tempfile
     tempfile="$(mktemp --dry-run --suffix=firefox.dmg)"
 
-    curl -o "$tempfile" https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US
+    curl -o "$tempfile" "https://download.mozilla.org/?product=firefox-latest-ssl&os=osx&lang=en-US"
     hdiutil attach "$tempfile"
     as_root cp /Volumes/Firefox/Firefox.app /Applications/
     hdiutil unmount /Volumes/Firefox
