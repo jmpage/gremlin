@@ -38,7 +38,7 @@ gremlin feature fonts install \
 gremlin feature firefox install
 #gremlin feature joplin install
 #gremlin feature joplin install-extension TODO
-#gremlin feature dropbox install
+gremlin feature dropbox install
 
 gremlin feature gnome configure
 # TODO gsettings / kde / etc
