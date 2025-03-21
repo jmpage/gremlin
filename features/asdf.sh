@@ -4,6 +4,7 @@ set -euo pipefail
 
 gremlin support as_root
 gremlin support get_home_dir
+gremlin support get_architecture
 
 install() {
     local
@@ -18,8 +19,7 @@ install() {
 
     case $(uname) in
         Linux)
-            # Assumption: AMD64 architecture
-            download_and_install "$tag" linux amd64
+            download_and_install "$tag" linux "$(get_release_architecture)"
             ;;
         Darwin)
             install_macos
@@ -31,6 +31,20 @@ install() {
     esac
 
     run plugin update --all
+}
+
+get_release_architecture() {
+    case $(get_architecture) in
+        amd64)
+            echo 'amd64'
+            ;;
+        arm64)
+            echo 'arm64'
+            ;;
+        x86)
+            echo '386'
+            ;;
+    esac
 }
 
 install_macos() {
