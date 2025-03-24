@@ -8,7 +8,7 @@ gremlin support as_root
 get_font_dir() {
     case $(uname) in
         Linux)
-            echo "$HOME/.local/share/fonts"
+            echo "${XDG_DATA_HOME:-$HOME/.local/share}/fonts"
             ;;
         Darwin)
             echo "$HOME/Library/Fonts"
