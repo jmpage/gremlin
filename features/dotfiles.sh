@@ -23,7 +23,7 @@ link_prelude_personal() {
     local dotfiles_personal_dir
     local emacs_dir
     local prelude_personal_dir
-    dotfiles_personal_dir="$(get_home_dir)/.config/prelude/personal"
+    dotfiles_personal_dir="${XDG_CONFIG_HOME:-$(get_home_dir)/.config}/prelude/personal"
     emacs_dir="$(gremlin feature -n emacs-prelude get-emacs-dir)"
     prelude_personal_dir="$emacs_dir/personal"
 
