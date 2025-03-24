@@ -4,7 +4,7 @@ apt_sources() {
     case "$1" in
         check)
             shift 1
-            grep -E "^$1 $2 $3( .* | )$4( |$)" /etc/apt/sources.list /etc/apt/sources.list.d/*
+            grep -E "^$1 $2 $3( [^ ]+)* $4( |$)" /etc/apt/sources.list /etc/apt/sources.list.d/*
             ;;
         find)
             shift 1
