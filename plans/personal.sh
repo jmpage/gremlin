@@ -9,6 +9,8 @@ set -euxo pipefail
 #gremlin feature debian-backports setup
 #...
 
+gremlin feature lenovo-x1-carbon-gen12-fixes install
+
 gremlin feature curl install
 gremlin feature workspace create
 gremlin feature dotfiles install
