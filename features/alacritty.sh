@@ -94,7 +94,7 @@ get_alacritty_bin() {
 }
 
 get_installed_version() {
-    "$(get_alacritty_bin)" --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^ ]+' || echo ''
+    "$(get_alacritty_bin)" --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo ''
 }
 
 install_linux_build_dependencies() {
