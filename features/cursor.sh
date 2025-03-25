@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support as_root
+gremlin support logmsg
 
 get_cursor_bin() {
     case $(uname) in
@@ -13,7 +14,7 @@ get_cursor_bin() {
             echo '/Applications/Cursor.app/Contents/Resources/app/bin/code'
             ;;
         *)
-            echo 'Unknown OS'
+            logmsg fatal "FEAT cursor: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -107,7 +108,7 @@ cursor_install() {
             cursor_install_dmg
             ;;
         *)
-            echo "Cursor not supported for operating system $(uname)"
+            logmsg fatal "FEAT cursor: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -115,7 +116,7 @@ cursor_install() {
 
 cursor_install_extension() {
     if [ "$#" -ne 1 ]; then
-        echo "Invalid number of arguments: expected 1, received $#"
+        logmsg fatal "FEAT cursor: invalid number of arguments: expected 1, received $#"
         exit 1
     fi
 
@@ -123,23 +124,22 @@ cursor_install_extension() {
     cursor_bin="$(get_cursor_bin)"
 
     if ! [[ -e "$cursor_bin" ]]; then
-       echo "Cursor not installed at $(cursor_bin)"
+       logmsg fatal "FEAT cursor: cursor not found at $(cursor_bin)"
        exit 1
     fi
 
     if $cursor_bin --list-extensions | grep "$1"; then
-        echo "Cursor extension $1 is already installed."
+        logmsg info "FEAT cursor: Skipping installation of extension $1 as it is already installed."
         return
     fi
 
     $cursor_bin --install-extension "$1"
-    echo "Cursor extension $1 installed."
+    logmsg info "FEAT cursor: extension $1 installed."
 }
 
 cursor_main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT cursor: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -153,8 +153,7 @@ cursor_main() {
             cursor_install_extension "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT cursor: invalid command: $1"
             exit 1
             ;;
     esac

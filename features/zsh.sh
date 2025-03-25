@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support as_root
+gremlin support logmsg
 
 install() {
     case $(uname) in
@@ -13,7 +14,7 @@ install() {
             gremlin feature homebrew run install zsh
             ;;
         *)
-            echo "Zsh is not supported for operating system $(uname)"
+            logmsg fatal "FEAT zsh: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -21,8 +22,7 @@ install() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT zsh: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -32,8 +32,7 @@ main() {
             install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT zsh: invalid command: $1"
             exit 1
             ;;
     esac

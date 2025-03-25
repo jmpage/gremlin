@@ -3,13 +3,17 @@
 set -euo pipefail
 
 gremlin support as_root
+gremlin support logmsg
 
 install() {
     local
     tag="$(get_tag "$@")"
 
+    logmsg debug "FEAT alacritty: requested version: $tag"
+    logmsg debug "FEAT alacritty: installed version: v$(get_installed_version)"
+
     if [[ "$tag" == "v$(get_installed_version)" ]]; then
-        echo "Skipping install of Alacritty $tag as it is already installed."
+        logmsg info "FEAT alacritty: Install skipped as $tag is already installed."
         return 0
     fi
 
@@ -21,7 +25,7 @@ install() {
             install_dmg "$tag"
             ;;
         *)
-            echo "Alacritty not supported for operating system $(uname)"
+            logmsg fatal "FEAT alacritty: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -47,14 +51,14 @@ install_dmg() {
     set -e
     case "$mtree_status" in
         0)
-            echo "Alacritty already matches installed version"
+            logmsg debug "FEAT alacritty: already matches installed version"
             ;;
         2)
             as_root rm -rf /Applications/Alacritty.app
             as_root cp /Volumes/Alacritty/Alacritty.app /Applications/
             ;;
         *)
-            echo "Error occurred when comparing new and old Alacritty via mtree"
+            logmsg fatal "FEAT alacritty: Unexpected error occurred when comparing new and old Alacritty via mtree"
             hdiutil unmount /Volumes/Alacritty
             exit 1
             ;;
@@ -83,11 +87,11 @@ get_alacritty_bin() {
             echo alacritty
             ;;
         Darwin)
-            echo "TODO: Not implemented" 1>&2
+            logmsg fatal "FEAT alacritty: TODO: Not implemented"
             exit 1
             ;;
         *)
-            echo "Unsupported operating system $(uname)" 1>&2
+            logmsg fatal "FEAT alacritty: Unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -163,8 +167,7 @@ install_linux() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT alacritty: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -174,8 +177,7 @@ main() {
             install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT alacritty: invalid command: $1"
             exit 1
             ;;
     esac

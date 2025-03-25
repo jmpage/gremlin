@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support as_root
+gremlin support logmsg
 
 install() {
     case $(uname) in
@@ -13,7 +14,7 @@ install() {
             install_dmg "$@"
             ;;
         *)
-            echo "Emacs not supported for operating system $(uname)"
+            logmsg fatal "FEAT emacs: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -38,7 +39,7 @@ install_dmg() {
 
     codesign_output="$(codesign -dvv /Volumes/Emacs/Emacs.app 2>&1)"
     if ! echo "$codesign_output" | grep 'Authority=Developer ID Application: Galvanix (5BRAQAFB8B)'; then
-        echo "Signature check for emacs failed! Check $tempfile"
+        logmsg fatal "FEAT emacs: Signature check failed! Check $tempfile"
         hdiutil unmount /Volumes/Emacs
         exit 1
     fi
@@ -51,7 +52,7 @@ install_dmg() {
     set -e
     case "$mtree_status" in
         0)
-            echo "Emacs already matches installed version"
+            logmsg info "FEAT emacs: already matches installed version"
             ;;
         2)
             as_root rm -rf /Applications/Emacs.app
@@ -60,7 +61,7 @@ install_dmg() {
             as_root ln --symbolic --force /usr/local/bin/emacsclient /Applications/Emacs.app/Contents/MacOS/bin/emacsclient
             ;;
         *)
-            echo "Error occurred when comparing new and old Emacs via mtree"
+            logmsg fatal "FEAT emacs: error occurred when comparing new and old Emacs via mtree"
             hdiutil unmount /Volumes/Emacs
             exit 1
             ;;
@@ -73,8 +74,7 @@ install_dmg() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT emacs: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -84,8 +84,7 @@ main() {
             install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT emacs: invalid command: $1"
             exit 1
             ;;
     esac

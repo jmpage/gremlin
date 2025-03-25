@@ -5,6 +5,7 @@ set -euo pipefail
 gremlin support apt_sources
 gremlin support as_root
 gremlin support compare_versions
+gremlin support logmsg
 gremlin support os_release
 
 build_and_install_firmware_sof_backport() {
@@ -14,7 +15,7 @@ build_and_install_firmware_sof_backport() {
     if dpkg-query --status firmware-sof-signed; then
         version=$(dpkg-query --status firmware-sof-signed | grep '^Version:' | grep -Eo '[0-9]+' | head -n1)
         if [[ $version -ge 2024 ]]; then
-            echo "Skipping custom backport of firmware-sof-signed as it is already version $version"
+            logmsg info "FEAT lenovo-x1-carbon-gen12-fixes: Skipping custom backport of firmware-sof-signed as it is already version $version"
             return 0
         fi
     fi
@@ -51,7 +52,7 @@ install() {
             install_linux
             ;;
         *)
-            echo "Fixes not supported for operating system $(uname)"
+            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -59,7 +60,7 @@ install() {
 
 install_linux() {
     if [[ $(get_hardware_name) != "ThinkPad X1 Carbon Gen 12" ]]; then
-        echo "Fixes not supported for $(get_hardware_name)"
+        logmsg warn "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for $(get_hardware_name)"
         exit 0
     fi
 
@@ -68,7 +69,7 @@ install_linux() {
             install_debian
             ;;
         *)
-            echo "Fixes not supported for Linux distro $(os_release id)"
+            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for Linux distro $(os_release id)"
             exit 1
             ;;
     esac
@@ -76,7 +77,7 @@ install_linux() {
 
 install_debian() {
     if [[ $(os_release version_id) != "12" ]]; then
-        echo "Fixes are only supported for Debian 12 Bookworm, got version $(os_release version_id)"
+        logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: Fixes are only supported for Debian 12 Bookworm, got version $(os_release version_id)"
         exit 1
     fi
 
@@ -92,7 +93,7 @@ install_debian() {
         as_root apt-get install -t bookworm-backports -y linux-image-6.11.10+bpo-amd64
         # TODO: install latest available kernel from backports instead of 6.11.10 specifically
     else
-        echo "Skipping install of newer kernel from backports because current version $(uname -v | grep -Eo '[0-9]+(\.[0-9]+){2}') is at least 6.11.10"
+        logmsg "FEAT lenovo-x1-carbon-gen12-fixes: Skipping install of newer kernel from backports because current version $(uname -v | grep -Eo '[0-9]+(\.[0-9]+){2}') is at least 6.11.10"
     fi
 
     # Fixes:
@@ -118,8 +119,7 @@ install_debian() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -129,8 +129,7 @@ main() {
             install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: invalid command: $1"
             exit 1
             ;;
     esac

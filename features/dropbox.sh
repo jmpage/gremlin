@@ -5,6 +5,7 @@ set -euo pipefail
 gremlin support as_root
 gremlin support os_release
 gremlin support apt_sources
+gremlin support logmsg
 
 install() {
     case $(uname) in
@@ -12,7 +13,7 @@ install() {
             install_linux
             ;;
         *)
-            echo "Dropbox not supported for operating system $(uname)"
+            logmsg fatal "FEAT dropbox: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -24,7 +25,7 @@ install_linux() {
             install_debian
             ;;
         *)
-            echo "Dropbox not supported for Linux distro $(os_release id)"
+            logmsg fatal "FEAT dropbox: unsupported for Linux distro $(os_release id)"
             exit 1
             ;;
     esac
@@ -49,8 +50,7 @@ install_debian() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT dropbox: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -60,8 +60,7 @@ main() {
             install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT dropbox: invalid command: $1"
             exit 1
             ;;
     esac

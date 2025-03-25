@@ -4,6 +4,7 @@ set -euo pipefail
 
 gremlin support as_root
 gremlin support get_home_dir
+gremlin support logmsg
 
 get_emacs_dir() {
     echo "$(get_home_dir)/.emacs.d"
@@ -11,7 +12,7 @@ get_emacs_dir() {
 
 install() {
     if is_installed; then
-        echo 'Skipping prelude install as it is already present'
+        logmsg info "FEAT emacs-prelude: Install skipped as prelude is already present."
         return 0
     fi
 
@@ -24,8 +25,7 @@ is_installed() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT emacs-prelude: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -41,8 +41,7 @@ main() {
             is_installed
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT emacs-prelude: invalid command: $1"
             exit 1
             ;;
     esac

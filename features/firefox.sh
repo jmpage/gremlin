@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support as_root
+gremlin support logmsg
 
 check_fingerprint() {
     local filename="$1"
@@ -19,7 +20,7 @@ check_fingerprint() {
     if [[ "$fingerprint" == "$expected_fingerprint" ]]; then
         return 0
     else
-        echo "$filename: fingerprint ($fingerprint) did not match expected fingerprint ($expected_fingerprint)" 1>&2
+        logmsg error "FEAT firefox: $filename: fingerprint ($fingerprint) did not match expected fingerprint ($expected_fingerprint)" 1>&2
         return 1
     fi
 }
@@ -63,7 +64,7 @@ firefox_install() {
             macos_install
             ;;
         *)
-            echo "Cursor not supported for operating system $(uname)"
+            logmsg fatal "FEAT firefox: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -71,8 +72,7 @@ firefox_install() {
 
 firefox_main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT firefox: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -82,8 +82,7 @@ firefox_main() {
             firefox_install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT firefox: invalid command: $1"
             exit 1
             ;;
     esac

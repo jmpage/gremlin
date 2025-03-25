@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support as_root
+gremlin support logmsg
 
 install() {
     case $(uname) in
@@ -13,7 +14,7 @@ install() {
             gremlin feature homebrew run install curl
             ;;
         *)
-            echo "Curl is not supported for operating system $(uname)"
+            logmsg fatal "FEAT curl: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -21,7 +22,7 @@ install() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
+        logmsg fatal "FEAT curl: invalid number of arguments: expected at least 1, received $#"
         echo ""
         exit 1
     fi
@@ -32,8 +33,7 @@ main() {
             install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT curl: invalid command: $1"
             exit 1
             ;;
     esac

@@ -2,13 +2,15 @@
 
 set -euo pipefail
 
+gremlin support logmsg
+
 install_joplin() {
     case $(uname) in
         Linux)
             install_linux
             ;;
         *)
-            echo "Joplin not supported for operating system $(uname)"
+            logmsg fatal "FEAT joplin: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -20,8 +22,7 @@ install_linux() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT joplin: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -31,8 +32,7 @@ main() {
             install_joplin "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT joplin: invalid command: $1"
             exit 1
             ;;
     esac

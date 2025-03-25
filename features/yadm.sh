@@ -4,6 +4,7 @@ set -euo pipefail
 
 gremlin support as_root
 gremlin support get_home_dir
+gremlin support logmsg
 
 clone() {
     # NOTE: When cloning outside of the home directory, new files will be staged and deleted
@@ -20,7 +21,7 @@ install() {
             gremlin feature homebrew run install yadm
             ;;
         *)
-            echo "Yadm is not supported for operating system $(uname)"
+            logmsg fatal "FEAT yadm: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -28,8 +29,7 @@ install() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT yadm: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -47,8 +47,7 @@ main() {
             "$(yadm_bin)" "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT yadm: invalid command: $1"
             exit 1
             ;;
     esac
@@ -63,7 +62,7 @@ yadm_bin() {
             echo '/opt/homebrew/bin/yadm'
             ;;
         *)
-            echo "Yadm is not supported for operating system $(uname)"
+            logmsg fatal "FEAT yadm: unsupported operating system $(uname)."
             exit 1
             ;;
     esac

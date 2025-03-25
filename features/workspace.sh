@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support get_home_dir
+gremlin support logmsg
 
 create() {
     mkdir -p "$(get_home_dir)/workspace/oss"
@@ -11,8 +12,7 @@ create() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT workspace: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -22,8 +22,7 @@ main() {
             create
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT workspace: invalid command: $1"
             exit 1
             ;;
     esac

@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support get_home_dir
+gremlin support logmsg
 
 add_known_hosts() {
     local line
@@ -25,8 +26,7 @@ known_hosts_file() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT github: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -39,8 +39,7 @@ main() {
             check_ssh
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT github: invalid command: $1"
             exit 1
             ;;
     esac

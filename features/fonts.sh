@@ -3,7 +3,7 @@
 set -euo pipefail
 
 gremlin support as_root
-
+gremlin support logmsg
 
 get_font_dir() {
     case $(uname) in
@@ -14,7 +14,7 @@ get_font_dir() {
             echo "$HOME/Library/Fonts"
             ;;
         *)
-            echo "Unhandled operating system: $(uname)" 1>&2
+            logmsg fatal "FEAT fonts: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -33,7 +33,7 @@ install() {
         filename="$(echo "$url" | grep -Eo '[^/]+$' | sed 's/%20/ /g')"
 
         if [[ -e "$fontdir/$filename" ]]; then
-            echo "Skipping installation of $filename as it already exists in $fontdir"
+            logmsg info "FEAT fonts: skipping installation of $filename as it already exists in $fontdir"
         else
             curl -o "$fontdir/$filename" "$url"
             fonts_installed=$((fonts_installed+1))
@@ -47,8 +47,7 @@ install() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT fonts: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -58,8 +57,7 @@ main() {
             install "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT fonts: invalid command: $1"
             exit 1
             ;;
     esac

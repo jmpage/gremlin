@@ -3,6 +3,7 @@
 set -euo pipefail
 
 gremlin support get_home_dir
+gremlin support logmsg
 
 install() {
     gremlin feature github add-known-hosts
@@ -28,18 +29,18 @@ link_prelude_personal() {
     prelude_personal_dir="$emacs_dir/personal"
 
     if [[ -h "$prelude_personal_dir" ]] && [[ -e "$prelude_personal_dir" ]]; then
-        echo "Skipping symlink of prelude personal directory as it is already symlinked."
+        logmsg info "FEAT dotfiles: Skipping symlink of prelude personal directory as it is already symlinked."
         return 0
     fi
 
     if [[ ! -d "$dotfiles_personal_dir" ]]; then
-        echo "Prelude personal directory is missing in dotfiles: $dotfiles_personal_dir" 1>&2
+        logmsg fatal "FEAT dotfiles: Prelude personal directory is missing in dotfiles: $dotfiles_personal_dir" 1>&2
         exit 1
     elif [[ ! -d "$emacs_dir" ]]; then
-        echo "Emacs configuration not found at $emacs_dir" 1>&2
+        logmsg fatal "FEAT dotfiles: Emacs configuration not found at $emacs_dir" 1>&2
         exit 1
     elif ! gremlin feature -n emacs-prelude is-installed; then
-        echo "Emacs Prelude is not installed"
+        logmsg fatal "FEAT dotfiles: Emacs Prelude is not installed"
         exit 1
     fi
 
@@ -49,8 +50,7 @@ link_prelude_personal() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT dotfiles: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -64,8 +64,7 @@ main() {
             link_prelude_personal "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT dotfiles: invalid command: $1"
             exit 1
             ;;
     esac

@@ -5,6 +5,7 @@ set -euo pipefail
 gremlin support as_root
 gremlin support get_home_dir
 gremlin support get_architecture
+gremlin support logmsg
 
 install() {
     local
@@ -13,7 +14,7 @@ install() {
     # TODO: check installed version
 
     if which asdf; then
-        echo "Asdf is already installed"
+        logmsg info "FEAT asdf: Install skipped as asdf is already installed."
         return 0
     fi
 
@@ -25,7 +26,7 @@ install() {
             install_macos
             ;;
         *)
-            echo "Asdf not supported for operating system $(uname)"
+            logmsg fatal "FEAT asdf: unsupported operating system $(uname)."
             exit 1
             ;;
     esac
@@ -91,8 +92,7 @@ get_tag() {
 
 main() {
     if [ "$#" -lt 1 ]; then
-        echo "Invalid number of arguments: expected at least 1, received $#"
-        echo ""
+        logmsg fatal "FEAT asdf: invalid number of arguments: expected at least 1, received $#"
         exit 1
     fi
 
@@ -110,8 +110,7 @@ main() {
             run "$@"
             ;;
         *)
-            echo "$0: invalid command: $1"
-            echo ""
+            logmsg fatal "FEAT asdf: invalid command: $1"
             exit 1
             ;;
     esac
