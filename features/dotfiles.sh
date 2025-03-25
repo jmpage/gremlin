@@ -43,7 +43,7 @@ link_prelude_personal() {
         exit 1
     fi
 
-    unlink "$prelude_personal_dir" || rm -rf "$prelude_personal_dir"
+    rm -rf "$prelude_personal_dir"
     ln -s "$dotfiles_personal_dir" "$prelude_personal_dir"
 }
 
