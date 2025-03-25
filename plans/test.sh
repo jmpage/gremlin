@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Temporary test file
 
-set -euxo pipefail
-
 gremlin feature curl install
 gremlin feature github add-known-hosts
 gremlin feature yadm install

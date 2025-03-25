@@ -2,8 +2,6 @@
 # Foo
 # bar
 
-set -euxo pipefail
-
 # https://stackoverflow.com/questions/496702/can-a-shell-script-set-environment-variables-of-the-calling-shell
 
 #gremlin feature debian-backports setup

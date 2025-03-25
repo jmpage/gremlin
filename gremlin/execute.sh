@@ -2,7 +2,8 @@
 #
 # Loads "DSL" and executes given plan
 
-set -euxo pipefail
+set -euTo pipefail
+shopt -s extdebug
 
 gremlin() {
     set +u
@@ -80,6 +81,14 @@ gremlin() {
             ;;
     esac
 }
+
+gremlin support logmsg
+
+gremlin_trace() {
+    logmsg trace "${BASH_SOURCE[1]}:${BASH_LINENO[0]} (${FUNCNAME[1]}): $BASH_COMMAND"
+}
+
+trap gremlin_trace DEBUG
 
 # shellcheck disable=SC1090
 . "$@"
