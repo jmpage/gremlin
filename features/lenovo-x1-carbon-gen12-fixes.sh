@@ -48,8 +48,8 @@ get_hardware_name() {
 
 install_debian() {
     if [[ $(os_release version_id) != "12" ]]; then
-        logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: Fixes are only supported for Debian 12 Bookworm, got version $(os_release version_id)"
-        exit 1
+        logmsg warn "FEAT lenovo-x1-carbon-gen12-fixes: Fixes are only supported for Debian 12 Bookworm, got version $(os_release version_id)"
+        return 0
     fi
 
     apt_sources upsert deb https://deb.debian.org/debian bookworm non-free
@@ -91,7 +91,7 @@ install_debian() {
 install_linux() {
     if [[ $(get_hardware_name) != "ThinkPad X1 Carbon Gen 12" ]]; then
         logmsg warn "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for $(get_hardware_name)"
-        exit 0
+        return 0
     fi
 
     case $(os_release id) in
@@ -99,8 +99,8 @@ install_linux() {
             install_debian
             ;;
         *)
-            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for Linux distro $(os_release id)"
-            exit 1
+            logmsg warn "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for Linux distro $(os_release id)"
+            return 0
             ;;
     esac
 }
