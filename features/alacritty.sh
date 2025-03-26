@@ -5,6 +5,38 @@ set -euo pipefail
 gremlin support as_root
 gremlin support logmsg
 
+get_alacritty_bin() {
+    case $(uname) in
+        Linux)
+            echo alacritty
+            ;;
+        Darwin)
+            logmsg fatal "FEAT alacritty: TODO: Not implemented"
+            exit 1
+            ;;
+        *)
+            logmsg fatal "FEAT alacritty: Unsupported operating system $(uname)."
+            exit 1
+            ;;
+    esac
+}
+
+get_installed_version() {
+    "$(get_alacritty_bin)" --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo ''
+}
+
+get_tag() {
+    if [[ "$#" -eq 0 ]]; then
+        curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq --raw-output 'map(select(.name | contains("-rc") | not)) | first .name'
+    else
+        echo "v$1"
+    fi
+}
+
+get_tarball_url() {
+    curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq --raw-output "map(select(.name == \"$1\")) | first .tarball_url"
+}
+
 install() {
     local
     tag="$(get_tag "$@")"
@@ -69,55 +101,6 @@ install_dmg() {
     rm "$temptreefile"
 }
 
-get_tag() {
-    if [[ "$#" -eq 0 ]]; then
-        curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq --raw-output 'map(select(.name | contains("-rc") | not)) | first .name'
-    else
-        echo "v$1"
-    fi
-}
-
-get_tarball_url() {
-    curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq --raw-output "map(select(.name == \"$1\")) | first .tarball_url"
-}
-
-get_alacritty_bin() {
-    case $(uname) in
-        Linux)
-            echo alacritty
-            ;;
-        Darwin)
-            logmsg fatal "FEAT alacritty: TODO: Not implemented"
-            exit 1
-            ;;
-        *)
-            logmsg fatal "FEAT alacritty: Unsupported operating system $(uname)."
-            exit 1
-            ;;
-    esac
-}
-
-get_installed_version() {
-    "$(get_alacritty_bin)" --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || echo ''
-}
-
-install_linux_build_dependencies() {
-    as_root apt-get install -y \
-            cmake \
-            pkg-config \
-            libfreetype6-dev \
-            libfontconfig1-dev \
-            libxcb-xfixes0-dev \
-            libxkbcommon-dev \
-            python3 \
-            gzip \
-            scdoc
-
-    gremlin feature asdf install
-    gremlin feature asdf run plugin add rust
-    gremlin feature asdf run install rust latest
-}
-
 install_linux() {
     local tag
     local tempfile
@@ -163,6 +146,23 @@ install_linux() {
 
     rm -rf "$tempdir"
     rm "$tempfile"
+}
+
+install_linux_build_dependencies() {
+    as_root apt-get install -y \
+            cmake \
+            pkg-config \
+            libfreetype6-dev \
+            libfontconfig1-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            python3 \
+            gzip \
+            scdoc
+
+    gremlin feature asdf install
+    gremlin feature asdf run plugin add rust
+    gremlin feature asdf run install rust latest
 }
 
 main() {
