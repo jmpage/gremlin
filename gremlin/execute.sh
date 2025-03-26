@@ -29,8 +29,7 @@ gremlin() {
                         skip_checkpoint=1
                         ;;
                     *)
-                        echo "Invalid option: ${OPTARG}"
-                        echo ""
+                        logmsg fatal "GREMLIN: Invalid option: ${OPTARG}"
                         exit 1;
                         ;;
                 esac
@@ -38,7 +37,7 @@ gremlin() {
             shift $((OPTIND -1))
 
             if [ "$#" -lt 1 ]; then
-                echo "Invalid number of arguments, expected: gremlin feature [-n] <name> ..."
+                logmsg fatal "GREMLIN: Invalid number of arguments, expected: gremlin feature [-n] <name> ..."
                 exit 1
             fi
 
@@ -50,9 +49,6 @@ gremlin() {
             shift 1
 
             if [[ "$skip_checkpoint" -eq 1 ]]; then
-                if [[ "$*" == 'get-emacs-dir' ]]; then
-                    echo "DEBUG: $("$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@")" 1>&2
-                fi
                 "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@"
             else
                 hashed_args="$(echo "$*" | md5sum | cut -c -32)"
@@ -61,14 +57,13 @@ gremlin() {
                 if [[ -f "$checkpoint" ]]; then
                     cat "$checkpoint"
                 else
-                    echo "pwd: $(pwd)"
                     "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@" > "$checkpoint"
                 fi
             fi
             ;;
         support)
             if [ "$#" -ne 2 ]; then
-                echo "Invalid number of arguments, expected: gremlin support <name>"
+                logmsg fatal "GREMLIN: Invalid number of arguments, expected: gremlin support <name>"
                 exit 1
             fi
 
@@ -76,7 +71,7 @@ gremlin() {
             . "$GREMLIN_DIR/gremlin/support/$2.sh"
             ;;
         *)
-            echo "Unknown command $1"
+            logmsg fatal "GREMLIN: Unknown command $1"
             exit 1
             ;;
     esac
