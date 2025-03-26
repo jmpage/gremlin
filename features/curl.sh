@@ -5,7 +5,7 @@ set -euo pipefail
 gremlin support as_root
 gremlin support logmsg
 
-install() {
+install_main() {
     case $(uname) in
         Linux)
             as_root apt-get -y install curl
@@ -30,7 +30,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT curl: invalid command: $1"

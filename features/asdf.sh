@@ -55,7 +55,7 @@ get_tag() {
     fi
 }
 
-install() {
+install_main() {
     local
     tag="$(get_tag "$@")"
 
@@ -99,7 +99,7 @@ main() {
             ;;
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         run)
             shift 1

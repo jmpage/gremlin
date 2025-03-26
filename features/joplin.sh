@@ -4,7 +4,7 @@ set -euo pipefail
 
 gremlin support logmsg
 
-install_joplin() {
+install_main() {
     case $(uname) in
         Linux)
             install_linux
@@ -29,7 +29,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install_joplin "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT joplin: invalid command: $1"

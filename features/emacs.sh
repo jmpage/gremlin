@@ -5,22 +5,7 @@ set -euo pipefail
 gremlin support as_root
 gremlin support logmsg
 
-install() {
-    case $(uname) in
-        Linux)
-            as_root apt-get -y install emacs
-            ;;
-        Darwin)
-            install_dmg "$@"
-            ;;
-        *)
-            logmsg fatal "FEAT emacs: unsupported operating system $(uname)."
-            exit 1
-            ;;
-    esac
-}
-
-install_dmg() {
+install_macos() {
     local codesign_output
     local mtree_status
     local tempfile
@@ -72,6 +57,21 @@ install_dmg() {
     rm "$temptreefile"
 }
 
+install_main() {
+    case $(uname) in
+        Linux)
+            as_root apt-get -y install emacs
+            ;;
+        Darwin)
+            install_macos "$@"
+            ;;
+        *)
+            logmsg fatal "FEAT emacs: unsupported operating system $(uname)."
+            exit 1
+            ;;
+    esac
+}
+
 main() {
     if [ "$#" -lt 1 ]; then
         logmsg fatal "FEAT emacs: invalid number of arguments: expected at least 1, received $#"
@@ -81,7 +81,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT emacs: invalid command: $1"

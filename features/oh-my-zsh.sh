@@ -5,7 +5,7 @@ set -euo pipefail
 gremlin support get_home_dir
 gremlin support logmsg
 
-install() {
+install_main() {
     if [[ -d "$(get_home_dir)/.oh-my-zsh" ]]; then
         logmsg info "FEAT oh-my-zsh: Skipping install as Oh My Zsh is already installed"
         return 0
@@ -23,7 +23,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT oh-my-zsh: invalid command: $1"

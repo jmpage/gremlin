@@ -12,7 +12,7 @@ clone() {
     "$(yadm_bin)" clone "$@"
 }
 
-install() {
+install_main() {
     case $(uname) in
         Linux)
             as_root apt-get -y install yadm
@@ -40,7 +40,7 @@ main() {
             ;;
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         run)
             shift 1

@@ -25,7 +25,7 @@ check_fingerprint() {
     fi
 }
 
-debian_install() {
+install_debian() {
     as_root install --directory --mode=0755 /etc/apt/keyrings
 
     if [[ ! -f /etc/apt/keyrings/packages.mozilla.org.asc ]]; then
@@ -44,7 +44,7 @@ debian_install() {
     as_root apt-get update && as_root apt-get install firefox
 }
 
-macos_install() {
+install_macos() {
     local tempfile
     tempfile="$(mktemp --dry-run --suffix=firefox.dmg)"
 
@@ -55,13 +55,13 @@ macos_install() {
     rm "$tempfile"
 }
 
-firefox_install() {
+install_main() {
     case $(uname) in
         Linux)
-            debian_install
+            install_debian
             ;;
         Darwin)
-            macos_install
+            install_macos
             ;;
         *)
             logmsg fatal "FEAT firefox: unsupported operating system $(uname)."
@@ -70,7 +70,7 @@ firefox_install() {
     esac
 }
 
-firefox_main() {
+main() {
     if [ "$#" -lt 1 ]; then
         logmsg fatal "FEAT firefox: invalid number of arguments: expected at least 1, received $#"
         exit 1
@@ -79,7 +79,7 @@ firefox_main() {
     case "$1" in
         install)
             shift 1
-            firefox_install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT firefox: invalid command: $1"
@@ -88,4 +88,4 @@ firefox_main() {
     esac
 }
 
-firefox_main "$@"
+main "$@"

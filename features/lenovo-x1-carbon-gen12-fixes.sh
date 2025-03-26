@@ -46,35 +46,6 @@ get_hardware_name() {
     sudo dmidecode --type 1 | grep Version | cut -c 11-
 }
 
-install() {
-    case $(uname) in
-        Linux)
-            install_linux
-            ;;
-        *)
-            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: unsupported operating system $(uname)."
-            exit 1
-            ;;
-    esac
-}
-
-install_linux() {
-    if [[ $(get_hardware_name) != "ThinkPad X1 Carbon Gen 12" ]]; then
-        logmsg warn "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for $(get_hardware_name)"
-        exit 0
-    fi
-
-    case $(os_release id) in
-        debian)
-            install_debian
-            ;;
-        *)
-            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for Linux distro $(os_release id)"
-            exit 1
-            ;;
-    esac
-}
-
 install_debian() {
     if [[ $(os_release version_id) != "12" ]]; then
         logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: Fixes are only supported for Debian 12 Bookworm, got version $(os_release version_id)"
@@ -117,6 +88,35 @@ install_debian() {
     build_and_install_firmware_sof_backport
 }
 
+install_linux() {
+    if [[ $(get_hardware_name) != "ThinkPad X1 Carbon Gen 12" ]]; then
+        logmsg warn "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for $(get_hardware_name)"
+        exit 0
+    fi
+
+    case $(os_release id) in
+        debian)
+            install_debian
+            ;;
+        *)
+            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: Fixes not supported for Linux distro $(os_release id)"
+            exit 1
+            ;;
+    esac
+}
+
+install_main() {
+    case $(uname) in
+        Linux)
+            install_linux
+            ;;
+        *)
+            logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: unsupported operating system $(uname)."
+            exit 1
+            ;;
+    esac
+}
+
 main() {
     if [ "$#" -lt 1 ]; then
         logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: invalid number of arguments: expected at least 1, received $#"
@@ -126,7 +126,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT lenovo-x1-carbon-gen12-fixes: invalid command: $1"

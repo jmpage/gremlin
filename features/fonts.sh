@@ -20,7 +20,7 @@ get_font_dir() {
     esac
 }
 
-install() {
+install_main() {
     local filename
     local fontdir
     local fonts_installed
@@ -54,7 +54,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT fonts: invalid command: $1"

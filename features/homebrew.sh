@@ -5,7 +5,7 @@ set -euo pipefail
 gremlin support as_root
 gremlin support logmsg
 
-install() {
+install_main() {
     case $(uname) in
         Darwin)
             if [[ -e /opt/homebrew/bin/brew ]]; then
@@ -39,7 +39,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         run)
             shift 1

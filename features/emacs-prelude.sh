@@ -10,7 +10,7 @@ get_emacs_dir() {
     echo "$(get_home_dir)/.emacs.d"
 }
 
-install() {
+install_main() {
     if is_installed; then
         logmsg info "FEAT emacs-prelude: Install skipped as prelude is already present."
         return 0
@@ -35,7 +35,7 @@ main() {
             ;;
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         is-installed)
             is_installed

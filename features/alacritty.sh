@@ -37,33 +37,7 @@ get_tarball_url() {
     curl -s https://api.github.com/repos/alacritty/alacritty/tags | jq --raw-output "map(select(.name == \"$1\")) | first .tarball_url"
 }
 
-install() {
-    local
-    tag="$(get_tag "$@")"
-
-    logmsg debug "FEAT alacritty: requested version: $tag"
-    logmsg debug "FEAT alacritty: installed version: v$(get_installed_version)"
-
-    if [[ "$tag" == "v$(get_installed_version)" ]]; then
-        logmsg info "FEAT alacritty: Install skipped as $tag is already installed."
-        return 0
-    fi
-
-    case $(uname) in
-        Linux)
-            install_linux "$tag"
-            ;;
-        Darwin)
-            install_dmg "$tag"
-            ;;
-        *)
-            logmsg fatal "FEAT alacritty: unsupported operating system $(uname)."
-            exit 1
-            ;;
-    esac
-}
-
-install_dmg() {
+install_macos() {
     local download_url
     local mtree_status
     local tempfile
@@ -165,6 +139,32 @@ install_linux_build_dependencies() {
     gremlin feature asdf run install rust latest
 }
 
+install_main() {
+    local
+    tag="$(get_tag "$@")"
+
+    logmsg debug "FEAT alacritty: requested version: $tag"
+    logmsg debug "FEAT alacritty: installed version: v$(get_installed_version)"
+
+    if [[ "$tag" == "v$(get_installed_version)" ]]; then
+        logmsg info "FEAT alacritty: Install skipped as $tag is already installed."
+        return 0
+    fi
+
+    case $(uname) in
+        Linux)
+            install_linux "$tag"
+            ;;
+        Darwin)
+            install_macos "$tag"
+            ;;
+        *)
+            logmsg fatal "FEAT alacritty: unsupported operating system $(uname)."
+            exit 1
+            ;;
+    esac
+}
+
 main() {
     if [ "$#" -lt 1 ]; then
         logmsg fatal "FEAT alacritty: invalid number of arguments: expected at least 1, received $#"
@@ -174,7 +174,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT alacritty: invalid command: $1"

@@ -5,7 +5,7 @@ set -euo pipefail
 gremlin support as_root
 gremlin support logmsg
 
-install() {
+install_main() {
     case $(uname) in
         Linux)
             as_root apt-get -y install zsh
@@ -29,7 +29,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT zsh: invalid command: $1"

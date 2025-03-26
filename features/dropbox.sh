@@ -7,30 +7,6 @@ gremlin support os_release
 gremlin support apt_sources
 gremlin support logmsg
 
-install() {
-    case $(uname) in
-        Linux)
-            install_linux
-            ;;
-        *)
-            logmsg fatal "FEAT dropbox: unsupported operating system $(uname)."
-            exit 1
-            ;;
-    esac
-}
-
-install_linux() {
-    case $(os_release id) in
-        debian)
-            install_debian
-            ;;
-        *)
-            logmsg fatal "FEAT dropbox: unsupported for Linux distro $(os_release id)"
-            exit 1
-            ;;
-    esac
-}
-
 install_debian() {
     if ! dpkg-query --status nautilus-dropbox; then
         local version_codename
@@ -48,6 +24,30 @@ install_debian() {
     fi
 }
 
+install_linux() {
+    case $(os_release id) in
+        debian)
+            install_debian
+            ;;
+        *)
+            logmsg fatal "FEAT dropbox: unsupported for Linux distro $(os_release id)"
+            exit 1
+            ;;
+    esac
+}
+
+install_main() {
+    case $(uname) in
+        Linux)
+            install_linux
+            ;;
+        *)
+            logmsg fatal "FEAT dropbox: unsupported operating system $(uname)."
+            exit 1
+            ;;
+    esac
+}
+
 main() {
     if [ "$#" -lt 1 ]; then
         logmsg fatal "FEAT dropbox: invalid number of arguments: expected at least 1, received $#"
@@ -57,7 +57,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         *)
             logmsg fatal "FEAT dropbox: invalid command: $1"

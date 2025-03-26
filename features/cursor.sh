@@ -20,7 +20,7 @@ get_cursor_bin() {
     esac
 }
 
-cursor_install_appimage() {
+install_appimage() {
     local tempfile
     tempfile="$(mktemp --dry-run)"
 
@@ -39,7 +39,103 @@ cursor_install_appimage() {
     as_root ln --symbolic --force /opt/cursor/squashfs-root/resources/app/bin/cursor /usr/local/bin/cursor
 }
 
-cursor_write_desktop_file() {
+install_macos() {
+    local tempfile
+    tempfile="$(mktemp --dry-run --suffix=.dmg)"
+
+    curl -o "$tempfile" https://downloader.cursor.sh/mac/installer/universal
+    hdiutil attach "$tempfile"
+    as_root cp /Volumes/Cursor/Cursor.app /Applications/
+    hdiutil unmount /Volumes/Cursor
+    rm "$tempfile"
+
+    as_root ln --symbolic --force /opt/cursor/squashfs-root/resources/app/bin/cursor /usr/local/bin/cursor
+}
+
+intall_extension() {
+    if [ "$#" -ne 1 ]; then
+        logmsg fatal "FEAT cursor: invalid number of arguments: expected 1, received $#"
+        exit 1
+    fi
+
+    local cursor_bin
+    cursor_bin="$(get_cursor_bin)"
+
+    if ! [[ -e "$cursor_bin" ]]; then
+       logmsg fatal "FEAT cursor: cursor not found at $(cursor_bin)"
+       exit 1
+    fi
+
+    if $cursor_bin --list-extensions | grep "$1"; then
+        logmsg info "FEAT cursor: Skipping installation of extension $1 as it is already installed."
+        return
+    fi
+
+    $cursor_bin --install-extension "$1"
+    logmsg info "FEAT cursor: extension $1 installed."
+}
+
+install_main() {
+    case $(uname) in
+        Linux)
+            install_appimage
+            patch_script
+            write_desktop_file
+            ;;
+        Darwin)
+            install_macos
+            ;;
+        *)
+            logmsg fatal "FEAT cursor: unsupported operating system $(uname)."
+            exit 1
+            ;;
+    esac
+}
+
+main() {
+    if [ "$#" -lt 1 ]; then
+        logmsg fatal "FEAT cursor: invalid number of arguments: expected at least 1, received $#"
+        exit 1
+    fi
+
+    case "$1" in
+        install)
+            shift 1
+            install_main "$@"
+            ;;
+        install-extension)
+            shift 1
+            intall_extension "$@"
+            ;;
+        *)
+            logmsg fatal "FEAT cursor: invalid command: $1"
+            exit 1
+            ;;
+    esac
+}
+
+patch_script() {
+    patch -p0 --ignore-whitespace /opt/cursor/squashfs-root/resources/app/bin/cursor <<'EOF'
+--- /opt/cursor/squashfs-root/resources/app/bin/cursor 2025-01-19 17:00:57.742217120 -0500
++++ /opt/cursor/squashfs-root/resources/app/bin/cursor 2025-01-19 17:02:25.793505866 -0500
+@@ -46,11 +46,11 @@
+
+ if [ ! -L "$0" ]; then
+        # if path is not a symlink, find relatively
+-       VSCODE_PATH="$(dirname "$0")/.."
++       VSCODE_PATH="$(dirname "$0")/../../.."
+ else
+        if command -v readlink >/dev/null; then
+                # if readlink exists, follow the symlink and find relatively
+-               VSCODE_PATH="$(dirname "$(readlink -f "$0")")/.."
++               VSCODE_PATH="$(dirname "$(readlink -f "$0")")/../../.."
+        else
+                # else use the standard install location
+                VSCODE_PATH="/usr/share/cursor"
+EOF
+}
+
+write_desktop_file() {
     local tempfile
     tempfile="$(mktemp --dry-run)"
 
@@ -63,100 +159,4 @@ EOF
     as_root update-desktop-database
 }
 
-cursor_patch_script() {
-    patch -p0 --ignore-whitespace /opt/cursor/squashfs-root/resources/app/bin/cursor <<'EOF'
---- /opt/cursor/squashfs-root/resources/app/bin/cursor 2025-01-19 17:00:57.742217120 -0500
-+++ /opt/cursor/squashfs-root/resources/app/bin/cursor 2025-01-19 17:02:25.793505866 -0500
-@@ -46,11 +46,11 @@
-
- if [ ! -L "$0" ]; then
-        # if path is not a symlink, find relatively
--       VSCODE_PATH="$(dirname "$0")/.."
-+       VSCODE_PATH="$(dirname "$0")/../../.."
- else
-        if command -v readlink >/dev/null; then
-                # if readlink exists, follow the symlink and find relatively
--               VSCODE_PATH="$(dirname "$(readlink -f "$0")")/.."
-+               VSCODE_PATH="$(dirname "$(readlink -f "$0")")/../../.."
-        else
-                # else use the standard install location
-                VSCODE_PATH="/usr/share/cursor"
-EOF
-}
-
-cursor_install_dmg() {
-    local tempfile
-    tempfile="$(mktemp --dry-run --suffix=.dmg)"
-
-    curl -o "$tempfile" https://downloader.cursor.sh/mac/installer/universal
-    hdiutil attach "$tempfile"
-    as_root cp /Volumes/Cursor/Cursor.app /Applications/
-    hdiutil unmount /Volumes/Cursor
-    rm "$tempfile"
-
-    as_root ln --symbolic --force /opt/cursor/squashfs-root/resources/app/bin/cursor /usr/local/bin/cursor
-}
-
-cursor_install() {
-    case $(uname) in
-        Linux)
-            cursor_install_appimage
-            cursor_patch_script
-            cursor_write_desktop_file
-            ;;
-        Darwin)
-            cursor_install_dmg
-            ;;
-        *)
-            logmsg fatal "FEAT cursor: unsupported operating system $(uname)."
-            exit 1
-            ;;
-    esac
-}
-
-cursor_install_extension() {
-    if [ "$#" -ne 1 ]; then
-        logmsg fatal "FEAT cursor: invalid number of arguments: expected 1, received $#"
-        exit 1
-    fi
-
-    local cursor_bin
-    cursor_bin="$(get_cursor_bin)"
-
-    if ! [[ -e "$cursor_bin" ]]; then
-       logmsg fatal "FEAT cursor: cursor not found at $(cursor_bin)"
-       exit 1
-    fi
-
-    if $cursor_bin --list-extensions | grep "$1"; then
-        logmsg info "FEAT cursor: Skipping installation of extension $1 as it is already installed."
-        return
-    fi
-
-    $cursor_bin --install-extension "$1"
-    logmsg info "FEAT cursor: extension $1 installed."
-}
-
-cursor_main() {
-    if [ "$#" -lt 1 ]; then
-        logmsg fatal "FEAT cursor: invalid number of arguments: expected at least 1, received $#"
-        exit 1
-    fi
-
-    case "$1" in
-        install)
-            shift 1
-            cursor_install "$@"
-            ;;
-        install-extension)
-            shift 1
-            cursor_install_extension "$@"
-            ;;
-        *)
-            logmsg fatal "FEAT cursor: invalid command: $1"
-            exit 1
-            ;;
-    esac
-}
-
-cursor_main "$@"
+main "$@"

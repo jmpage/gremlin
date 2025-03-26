@@ -5,7 +5,7 @@ set -euo pipefail
 gremlin support get_home_dir
 gremlin support logmsg
 
-install() {
+install_main() {
     gremlin feature github add-known-hosts
     gremlin feature yadm install
 
@@ -57,7 +57,7 @@ main() {
     case "$1" in
         install)
             shift 1
-            install "$@"
+            install_main "$@"
             ;;
         link-prelude-personal)
             shift 1
