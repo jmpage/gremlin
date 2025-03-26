@@ -10,14 +10,17 @@ export GREMLIN_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null &
 gremlin_main() {
     local OPTARG
     local OPTIND
-    while getopts ":hd" opt "${@}"; do
+    local loglevel
+    loglevel=info
+
+    while getopts ":hv:" opt "${@}"; do
         case ${opt} in
             h)
                 print_help
                 exit 0
                 ;;
-            d)
-                export GREMLIN_VERBOSE=1
+            v)
+                loglevel="${OPTARG}"
                 ;;
             ?)
                 echo "Invalid option: ${OPTARG}"
@@ -28,6 +31,31 @@ gremlin_main() {
         esac
     done
     shift $((OPTIND -1))
+
+    case "$loglevel" in
+        fatal)
+            export GREMLIN_LOG_LEVEL=1
+            ;;
+        error)
+            export GREMLIN_LOG_LEVEL=2
+            ;;
+        warn)
+            export GREMLIN_LOG_LEVEL=3
+            ;;
+        info)
+            export GREMLIN_LOG_LEVEL=4
+            ;;
+        debug)
+            export GREMLIN_LOG_LEVEL=5
+            ;;
+        trace)
+            export GREMLIN_LOG_LEVEL=6
+            ;;
+        *)
+            echo "Invalid verbosity option: $loglevel"
+            exit 1
+            ;;
+    esac
 
     if [ "$#" -lt 1 ]; then
         echo "Invalid number of arguments: expected at least 1, received $#"
@@ -89,7 +117,7 @@ list_plans() {
 }
 
 print_help() {
-    echo "USAGE: $0 [-h] [-v] <command>"
+    echo "USAGE: $0 [-h] [-v level] <command>"
     echo ""
     echo "Executes system setup according to plans"
     echo ""
@@ -97,7 +125,7 @@ print_help() {
     echo ""
     echo "  -h - show this help"
     echo ""
-    echo "  -v - log verbosely"
+    echo "  -v - the log level to use: trace|debug|info|warn|error|fatal (default: info)"
     echo ""
     echo "COMMANDS"
     echo ""

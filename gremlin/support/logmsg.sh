@@ -32,7 +32,7 @@ logmsg() {
     loglevel_name=$(echo "$1" | tr '[:lower:]' '[:upper:]')
     shift 1
 
-    if [[ loglevel -le ${GREMLIN_LOG_LEVEL:-6} ]]; then
+    if [[ loglevel -le ${GREMLIN_LOG_LEVEL:-4} ]]; then
         echo "$loglevel_name $@" 1>&2
     fi
 }
