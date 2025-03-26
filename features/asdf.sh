@@ -7,6 +7,54 @@ gremlin support get_home_dir
 gremlin support get_architecture
 gremlin support logmsg
 
+# $1 = version
+# $2 = platform (darwin|linux)
+# $3 = architecture (arm64|amd64|386)
+download_and_install() {
+    local download_url
+    local tempfile
+
+    # 2 = darwin, 3 = amd64
+    download_url="https://github.com/asdf-vm/asdf/releases/download/$1/asdf-$1-$2-$3.tar.gz"
+
+    tempfile="$(mktemp --dry-run --suffix=.tar.gz)"
+    curl -L -o "$tempfile" "$download_url"
+
+    as_root rm -f /usr/local/bin/asdf
+    as_root tar -xzf "$tempfile" --directory /usr/local/bin asdf
+
+    rm "$tempfile"
+}
+
+execute() {
+    export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+    # shellcheck disable=SC1090
+    . <(asdf completion bash)
+    "$@"
+}
+
+get_release_architecture() {
+    case $(get_architecture) in
+        amd64)
+            echo 'amd64'
+            ;;
+        arm64)
+            echo 'arm64'
+            ;;
+        x86)
+            echo '386'
+            ;;
+    esac
+}
+
+get_tag() {
+    if [[ "$#" -eq 0 ]]; then
+        curl -s https://api.github.com/repos/asdf-vm/asdf/tags | jq --raw-output 'first .name'
+    else
+        echo "v$1"
+    fi
+}
+
 install() {
     local
     tag="$(get_tag "$@")"
@@ -34,60 +82,8 @@ install() {
     run plugin update --all
 }
 
-get_release_architecture() {
-    case $(get_architecture) in
-        amd64)
-            echo 'amd64'
-            ;;
-        arm64)
-            echo 'arm64'
-            ;;
-        x86)
-            echo '386'
-            ;;
-    esac
-}
-
 install_macos() {
     gremlin feature homebrew run install asdf
-}
-
-# $1 = version
-# $2 = platform (darwin|linux)
-# $3 = architecture (arm64|amd64|386)
-download_and_install() {
-    local download_url
-    local tempfile
-
-    # 2 = darwin, 3 = amd64
-    download_url="https://github.com/asdf-vm/asdf/releases/download/$1/asdf-$1-$2-$3.tar.gz"
-
-    tempfile="$(mktemp --dry-run --suffix=.tar.gz)"
-    curl -L -o "$tempfile" "$download_url"
-
-    as_root rm -f /usr/local/bin/asdf
-    as_root tar -xzf "$tempfile" --directory /usr/local/bin asdf
-
-    rm "$tempfile"
-}
-
-execute() {
-    export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
-    # shellcheck disable=SC1090
-    . <(asdf completion bash)
-    "$@"
-}
-
-run() {
-    asdf "$@"
-}
-
-get_tag() {
-    if [[ "$#" -eq 0 ]]; then
-        curl -s https://api.github.com/repos/asdf-vm/asdf/tags | jq --raw-output 'first .name'
-    else
-        echo "v$1"
-    fi
 }
 
 main() {
@@ -114,6 +110,10 @@ main() {
             exit 1
             ;;
     esac
+}
+
+run() {
+    asdf "$@"
 }
 
 main "$@"
