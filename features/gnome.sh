@@ -5,6 +5,11 @@ set -euo pipefail
 gremlin support logmsg
 
 configure() {
+    if ! which gsettings; then
+       logmsg warn "FEAT gnome: Skipping as gsettings is not detected"
+       return 0
+    fi
+
     gsettings set org.gnome.nautilus.preferences default-folder-viewer 'list-view'
     gsettings_unbind '<Control>period'
     gsettings_unbind '<Alt>space'
