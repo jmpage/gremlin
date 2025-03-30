@@ -65,17 +65,17 @@ main() {
 }
 
 print_help() {
-    echo "USAGE: $0 [-b branch] [-d directory] [-h] <plan>"
-    echo ""
-    echo "Installs gremlin and executes the given plan"
-    echo ""
-    echo "OPTIONS"
-    echo ""
-    echo "  -b - the branch to checkout in the gremlin repository (default: main)"
-    echo ""
-    echo "  -d - the directory to checkout the gremlin repository to (default: $HOME/.gremlin)"
-    echo ""
-    echo "  -h - show this help"
+    cat <<EOF
+USAGE: $0 [-b branch] [-d directory] [-h] <plan>
+
+Installs gremlin and executes the given plan
+
+OPTIONS
+
+  -b - the branch to checkout in the gremlin repository (default: main)
+  -d - the directory to checkout the gremlin repository to (default: $HOME/.gremlin)
+  -h - show this help
+EOF
 }
 
 main "$@"
