@@ -59,7 +59,7 @@ install_debian() {
     apt_sources upsert deb https://deb.debian.org/debian bookworm-backports non-free-firmware
     as_root apt-get update
 
-    if compare_versions $(uname -v | grep -Eo '[0-9]+(\.[0-9]+){2}') -lt 6.11.10; then
+    if compare_versions "$(uname -v | grep -Eo '[0-9]+(\.[0-9]+){2}')" -lt 6.11.10; then
         # Fixes: Newer kernel from backports for touchpad support
         as_root apt-get install -t bookworm-backports -y linux-image-6.11.10+bpo-amd64
         # TODO: install latest available kernel from backports instead of 6.11.10 specifically

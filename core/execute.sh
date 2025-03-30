@@ -49,17 +49,17 @@ gremlin() {
             shift 1
 
             if [[ "$skip_checkpoint" -eq 1 ]]; then
-                logmsg info "GREMLIN: executing feature $feature $@ (skip checkpoint)"
+                logmsg info "GREMLIN: executing feature $feature $* (skip checkpoint)"
                 "$GREMLIN_DIR/core/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@"
             else
                 hashed_args="$(echo "$*" | md5sum | cut -c -32)"
                 sanitized_args="$(echo "$*" | sed -r 's/[^a-zA-Z0-9]/-/g' | cut -c 32)"
                 checkpoint="$GREMLIN_CHECKPOINT_DIR/$feature-$sanitized_args-$hashed_args"
                 if [[ -f "$checkpoint" ]]; then
-                    logmsg info "GREMLIN: skipping feature $feature $@ (checkpoint exists)"
+                    logmsg info "GREMLIN: skipping feature $feature $* (checkpoint exists)"
                     cat "$checkpoint"
                 else
-                    logmsg info "GREMLIN: executing feature $feature $@"
+                    logmsg info "GREMLIN: executing feature $feature $*"
                     "$GREMLIN_DIR/core/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@" > "$checkpoint"
                 fi
             fi

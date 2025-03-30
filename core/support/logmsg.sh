@@ -33,6 +33,6 @@ logmsg() {
     shift 1
 
     if [[ loglevel -le ${GREMLIN_LOG_LEVEL:-4} ]]; then
-        echo "$loglevel_name $@" 1>&2
+        echo "$loglevel_name $*" 1>&2
     fi
 }

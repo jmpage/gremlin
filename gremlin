@@ -5,7 +5,8 @@
 set -euo pipefail
 
 export PS4='+${LINENO}: '
-export GREMLIN_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+GREMLIN_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+export GREMLIN_DIR
 
 gremlin_main() {
     local OPTARG
