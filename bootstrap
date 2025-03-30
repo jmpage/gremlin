@@ -18,7 +18,6 @@ install_git() {
 main() {
     local branch
     local gremlin_dir
-    local gremlin_plan
     branch="main"
     gremlin_dir="$HOME/.gremlin"
 
@@ -53,22 +52,22 @@ main() {
         exit 1
     fi
 
-    gremlin_plan="$1"
-
     install_git
 
-    echo "Cloning branch $branch of the gremlin repository to $gremlin_dir and executing plan $gremlin_plan"
+    echo "Cloning branch $branch of the gremlin repository to $gremlin_dir and executing $*"
 
     git clone --branch "$branch" https://github.com/jmpage/gremlin.git "$gremlin_dir"
     cd "$gremlin_dir"
-    ./gremlin execute "$gremlin_plan"
+    ./gremlin "$@"
 }
 
 print_help() {
     cat <<EOF
-USAGE: $0 [-b branch] [-d directory] [-h] <plan>
+USAGE: $0 [-b branch] [-d directory] [-h] -- <options for gremlin>
 
-Installs gremlin and executes the given plan
+EXAMPLE: $0 -b main -d $HOME/.gremlin -- execute personal
+
+Installs gremlin and executes it with the given options
 
 OPTIONS
 
