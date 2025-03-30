@@ -22,6 +22,7 @@ wget -nv -O- https://raw.githubusercontent.com/jmpage/gremlin/refs/heads/main/bo
 
 Directory | Description
 -|-
+`bin/` | Scripts related to development.
 `core/` | Scripts for supporting the execution of gremlin to aid in plan execution.
 `core/support/` | Support scripts for use in gremlin features.
 `plans/` | Custom plans which use the gremlin "DSL" to bootstrap a system.
