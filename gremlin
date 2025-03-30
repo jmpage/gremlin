@@ -118,23 +118,23 @@ list_plans() {
 }
 
 print_help() {
-    echo "USAGE: $0 [-h] [-v level] <command>"
-    echo ""
-    echo "Executes system setup according to plans"
-    echo ""
-    echo "OPTIONS"
-    echo ""
-    echo "  -h - show this help"
-    echo ""
-    echo "  -v - the log level to use: trace|debug|info|warn|error|fatal (default: info)"
-    echo ""
-    echo "COMMANDS"
-    echo ""
-    echo "  describe <name> - describe the named plan"
-    echo ""
-    echo "  execute <name> - execute the named plan"
-    echo ""
-    echo "  list - list the available plans"
+    cat <<EOF
+USAGE: $0 [-h] [-v level] <command>
+
+Executes system setup according to plans
+
+OPTIONS
+
+  -h - show this help
+  -v - the log level to use: trace|debug|info|warn|error|fatal (default: info)
+
+COMMANDS
+
+  describe <name> - describe the named plan
+  execute <name> - execute the named plan
+  list - list the available plans
+EOF
+
 }
 
 gremlin_main "$@"
