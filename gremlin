@@ -107,7 +107,7 @@ execute_plan() {
         exit 1
     fi
 
-    "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/plans/$1.sh"
+    "$GREMLIN_DIR/core/execute.sh" "$GREMLIN_DIR/plans/$1.sh"
 }
 
 list_plans() {

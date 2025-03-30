@@ -61,7 +61,7 @@ main() {
 
     git clone --branch "$branch" https://github.com/jmpage/gremlin.git "$gremlin_dir"
     cd "$gremlin_dir"
-    ./gremlin.sh execute "$gremlin_plan"
+    ./gremlin execute "$gremlin_plan"
 }
 
 print_help() {

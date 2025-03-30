@@ -6,7 +6,7 @@ shopt -s globstar
 find_scripts() {
     local files
     files=()
-    for path in bin/**/* features/**/* gremlin.sh gremlin/**/* plans/**/*; do
+    for path in bin/**/* core/**/* features/**/* gremlin plans/**/*; do
         if [[ -f "$path" ]]; then
             files+=("$path")
         fi

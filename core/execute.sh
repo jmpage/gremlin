@@ -50,7 +50,7 @@ gremlin() {
 
             if [[ "$skip_checkpoint" -eq 1 ]]; then
                 logmsg info "GREMLIN: executing feature $feature $@ (skip checkpoint)"
-                "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@"
+                "$GREMLIN_DIR/core/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@"
             else
                 hashed_args="$(echo "$*" | md5sum | cut -c -32)"
                 sanitized_args="$(echo "$*" | sed -r 's/[^a-zA-Z0-9]/-/g' | cut -c 32)"
@@ -60,7 +60,7 @@ gremlin() {
                     cat "$checkpoint"
                 else
                     logmsg info "GREMLIN: executing feature $feature $@"
-                    "$GREMLIN_DIR/gremlin/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@" > "$checkpoint"
+                    "$GREMLIN_DIR/core/execute.sh" "$GREMLIN_DIR/features/$feature.sh" "$@" > "$checkpoint"
                 fi
             fi
             ;;
@@ -71,7 +71,7 @@ gremlin() {
             fi
 
             # shellcheck disable=SC1090
-            . "$GREMLIN_DIR/gremlin/support/$2.sh"
+            . "$GREMLIN_DIR/core/support/$2.sh"
             ;;
         *)
             logmsg fatal "GREMLIN: Unknown command $1"

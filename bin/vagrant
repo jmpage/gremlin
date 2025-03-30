@@ -19,7 +19,7 @@ run_test() {
     vagrant snapshot restore base
     vagrant up
 
-    vagrant ssh -c "/vagrant/gremlin.sh execute $plan"
+    vagrant ssh -c "/vagrant/gremlin -v trace execute $plan"
 }
 
 run_tests() {
