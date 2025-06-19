@@ -59,7 +59,7 @@ install_macos() {
     as_root ln --symbolic --force /opt/cursor/squashfs-root/resources/app/bin/cursor /usr/local/bin/cursor
 }
 
-intall_extension() {
+install_extension() {
     if [ "$#" -ne 1 ]; then
         logmsg fatal "FEAT cursor: invalid number of arguments: expected 1, received $#"
         exit 1
@@ -112,7 +112,7 @@ main() {
             ;;
         install-extension)
             shift 1
-            intall_extension "$@"
+            install_extension "$@"
             ;;
         *)
             logmsg fatal "FEAT cursor: invalid command: $1"
