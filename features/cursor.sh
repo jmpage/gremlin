@@ -34,12 +34,11 @@ install_appimage() {
     as_root chmod 755 /opt/cursor/Cursor.AppImage
 
     cd /opt/cursor
+    as_root rm -rf /opt/cursor/squashfs-root
     as_root /opt/cursor/Cursor.AppImage --appimage-extract
     as_root chown -R "$USER:$USER" /opt/cursor/squashfs-root
-    as_root chown root:root /opt/cursor/squashfs-root/chrome-sandbox
-    as_root chmod 4755 /opt/cursor/squashfs-root/chrome-sandbox
 
-    as_root ln --symbolic --force /opt/cursor/squashfs-root/resources/app/bin/cursor /usr/local/bin/cursor
+    as_root ln --symbolic --force /opt/cursor/squashfs-root/usr/share/cursor/resources/linux/bin/cursor /usr/local/bin/cursor
 }
 
 install_macos() {
@@ -122,9 +121,9 @@ main() {
 }
 
 patch_script() {
-    patch -p0 --ignore-whitespace /opt/cursor/squashfs-root/resources/app/bin/cursor <<'EOF'
---- /opt/cursor/squashfs-root/resources/app/bin/cursor 2025-01-19 17:00:57.742217120 -0500
-+++ /opt/cursor/squashfs-root/resources/app/bin/cursor 2025-01-19 17:02:25.793505866 -0500
+    patch -p0 --ignore-whitespace /opt/cursor/squashfs-root/usr/share/cursor/resources/linux/bin/cursor <<'EOF'
+--- /opt/cursor/squashfs-root/usr/share/cursor/resources/linux/bin/cursor 2025-06-19 16:00:57.742217120 -0500
++++ /opt/cursor/squashfs-root/usr/share/cursor/resources/linux/bin/cursor 2025-06-19 16:02:25.793505866 -0500
 @@ -46,11 +46,11 @@
 
  if [ ! -L "$0" ]; then
@@ -146,19 +145,20 @@ write_desktop_file() {
     local tempfile
     tempfile="$(mktemp --dry-run)"
 
-    # NOTE: A desktop file is included in the cursor AppImage but it's pretty
-    # barebones.
     cat >"$tempfile" <<EOF
 [Desktop Entry]
 Name=Cursor
-Exec=/opt/cursor/squashfs-root/cursor
+Comment=The AI Code Editor.
+GenericName=Text Editor
+Exec=/opt/cursor/squashfs-root/AppRun
 Terminal=false
 Type=Application
-Icon=/opt/cursor/squashfs-root/cursor.png
+Icon=/opt/cursor/squashfs-root/co.anysphere.cursor.png
+StartupNotify=false
 StartupWMClass=Cursor
-X-AppImage-Version=latest
-MimeType=x-scheme-handler/cursor;
-Categories=Utility;Development
+MimeType=application/x-cursor-workspace;
+Categories=TextEditor;Development;IDE;
+Keywords=cursor;
 EOF
 
     as_root mv -f "$tempfile" /usr/share/applications/cursor.desktop
