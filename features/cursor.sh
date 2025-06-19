@@ -24,7 +24,10 @@ install_appimage() {
     local tempfile
     tempfile="$(mktemp --dry-run)"
 
-    curl -o "$tempfile" https://downloader.cursor.sh/linux/appImage/x64
+    local download_url
+    download_url="$(curl --silent 'https://www.cursor.com/api/download?platform=linux-x64&releaseTrack=stable' | jq --raw-output '.downloadUrl')"
+
+    curl -o "$tempfile" "$download_url"
 
     as_root mkdir -p /opt/cursor
     as_root mv -f "$tempfile" /opt/cursor/Cursor.AppImage
@@ -43,7 +46,11 @@ install_macos() {
     local tempfile
     tempfile="$(mktemp --dry-run --suffix=.dmg)"
 
-    curl -o "$tempfile" https://downloader.cursor.sh/mac/installer/universal
+    local download_url
+    download_url="$(curl --silent 'https://www.cursor.com/api/download?platform=darwin-universal&releaseTrack=stable' | jq --raw-output '.downloadUrl')"
+
+    curl -o "$tempfile" "$download_url"
+
     hdiutil attach "$tempfile"
     as_root cp /Volumes/Cursor/Cursor.app /Applications/
     hdiutil unmount /Volumes/Cursor
