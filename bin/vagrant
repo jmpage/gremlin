@@ -20,29 +20,106 @@ run_test() {
     vagrant up
 
     vagrant ssh -c "/vagrant/gremlin -v trace execute $plan"
+    #vagrant ssh -c "wget -nv -O- https://raw.githubusercontent.com/jmpage/gremlin/refs/heads/$branch/bootstrap | /usr/bin/env bash /dev/stdin -b $branch -- execute $plan"
 }
 
 run_tests() {
+    # TODO: add gremlin test command which runs test files from a tests folder and use that instead of doing these full tests
+    # TODO: we should probably have a bunch of test scripts that we execute on the box after doing a non-execute bootstrap (not yet supported)
+    # TODO: then we can do things like run unit tests
     # TODO: default to current branch and allow branch to be specified
     run_test bash-based-bootstrap personal
 }
 
 cleanup() {
-    vagrant destroy
+    vagrant destroy --force
 }
 
-case "$1" in
-    setup)
-        setup
-        ;;
-    test)
-        run_tests
-        ;;
-    cleanup)
-        cleanup
-        ;;
-    *)
-        echo "Unknown command $1"
+get_machines() {
+    vagrant status --machine-readable | grep ',state,' | sed -r 's/[0-9]+,([^,]+),state,.*/\1/g'
+}
+
+main() {
+    local OPTARG
+    local OPTIND
+    while getopts ":h" opt "${@}"; do
+        case ${opt} in
+            h)
+                print_help
+                exit 0
+                ;;
+            ?)
+            echo "Invalid option: ${OPTARG}"
+            echo ""
+            print_help
+            exit 1;
+            ;;
+        esac
+    done
+    shift $((OPTIND -1))
+
+    if [ "$#" -lt 1 ]; then
+        echo "Invalid number of arguments: expected at least 1, received $#"
+        echo ""
+        print_help
         exit 1
-        ;;
-esac
+    fi
+
+    case "$1" in
+        # TODO: continue refactoring each of the functions called below to support options
+        setup)
+            setup "$@"
+            ;;
+        test)
+            run_tests "$@"
+            ;;
+        cleanup)
+            cleanup "$@"
+            ;;
+        *)
+            echo "Unknown command $1"
+            print_help
+            exit 1
+            ;;
+    esac
+}
+
+print_help() {
+    cat <<EOF
+USAGE: $0 [-h] <command>
+
+Manages Vagrant VMs and associated tests.
+Run "$0 <command> -h" for information about that command and its options.
+
+OPTIONS:
+
+  -h - show this help
+
+COMMANDS:
+
+  cleanup - destroys vagrant machines
+  setup - creates vagrant machines
+  test - runs tests
+EOF
+
+}
+
+main "$@"
+
+# TODO: detect test failure and report / exit with non-zero status
+# TODO: capture test output somewhere
+# TODO: refactor to support these options:
+# test -h
+# test setup
+# test setup -m debian
+# test setup -m macos
+# test cleanup -m macos
+# test cleanup
+# test run -h
+# test run -b my_branch
+# test run -sintegration
+# test run -s unit
+# test run -s integration -s unit
+# test run -m debian unit integration
+# test run -m debian-bookworm -m macos-sequoia -s unit -s integration
+# test run # run all suites and all vms by default
